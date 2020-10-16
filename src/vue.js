@@ -1,5 +1,5 @@
-var _ = require('./util')
-var extend = _.extend
+var _ = require('./util');
+var extend = _.extend;
 
 /**
  * The exposed Vue constructor.
@@ -15,15 +15,15 @@ var extend = _.extend
  * @public
  */
 
-function Vue (options) {
-  this._init(options)
+function Vue(options) {
+    this._init(options); //* ./instance/init
 }
 
 /**
  * Mixin global API
  */
 
-extend(Vue, require('./api/global'))
+extend(Vue, require('./api/global'));
 
 /**
  * Vue and every constructor that extends Vue has an
@@ -35,18 +35,18 @@ extend(Vue, require('./api/global'))
  */
 
 Vue.options = {
-  directives  : require('./directives'),
-  filters     : require('./filters'),
-  partials    : {},
-  transitions : {},
-  components  : {}
-}
+    directives: require('./directives'),
+    filters: require('./filters'),
+    partials: {},
+    transitions: {},
+    components: {},
+};
 
 /**
  * Build up the prototype
  */
 
-var p = Vue.prototype
+var p = Vue.prototype;
 
 /**
  * $data has a setter which does a bunch of
@@ -54,31 +54,32 @@ var p = Vue.prototype
  */
 
 Object.defineProperty(p, '$data', {
-  get: function () {
-    return this._data
-  },
-  set: function (newData) {
-    this._setData(newData)
-  }
-})
+    get: function () {
+        return this._data;
+    },
+    set: function (newData) {
+        this._setData(newData);
+    },
+});
 
 /**
  * Mixin internal instance methods
  */
 
-extend(p, require('./instance/init'))
-extend(p, require('./instance/events'))
-extend(p, require('./instance/scope'))
-extend(p, require('./instance/compile'))
+//* copy things to prototype of Vue
+extend(p, require('./instance/init'));
+extend(p, require('./instance/events'));
+extend(p, require('./instance/scope')); //* this._initScope();  //都绑到vue上，但是实在_init里call
+extend(p, require('./instance/compile'));
 
 /**
  * Mixin public API methods
  */
 
-extend(p, require('./api/data'))
-extend(p, require('./api/dom'))
-extend(p, require('./api/events'))
-extend(p, require('./api/child'))
-extend(p, require('./api/lifecycle'))
+extend(p, require('./api/data'));
+extend(p, require('./api/dom'));
+extend(p, require('./api/events'));
+extend(p, require('./api/child'));
+extend(p, require('./api/lifecycle')); //* $mount is added here
 
-module.exports = _.Vue = Vue
+module.exports = _.Vue = Vue;

@@ -1,18 +1,18 @@
-var _ = require('../util')
-var config = require('../config')
-var Dep = require('./dep')
-var arrayMethods = require('./array')
-var arrayKeys = Object.getOwnPropertyNames(arrayMethods)
-require('./object')
+var _ = require('../util');
+var config = require('../config');
+var Dep = require('./dep');
+var arrayMethods = require('./array');
+var arrayKeys = Object.getOwnPropertyNames(arrayMethods); //* NOTE: what is getOwnPropertyNames?
+require('./object');
 
-var uid = 0
+var uid = 0;
 
 /**
  * Type enums
  */
 
-var ARRAY  = 0
-var OBJECT = 1
+var ARRAY = 0;
+var OBJECT = 1;
 
 /**
  * Augment an target Object or Array by intercepting
@@ -22,8 +22,9 @@ var OBJECT = 1
  * @param {Object} proto
  */
 
-function protoAugment (target, src) {
-  target.__proto__ = src
+//* this is not a good way, should not modify __proto__ directly
+function protoAugment(target, src) {
+    target.__proto__ = src;
 }
 
 /**
@@ -34,13 +35,13 @@ function protoAugment (target, src) {
  * @param {Object} proto
  */
 
-function copyAugment (target, src, keys) {
-  var i = keys.length
-  var key
-  while (i--) {
-    key = keys[i]
-    _.define(target, key, src[key])
-  }
+function copyAugment(target, src, keys) {
+    var i = keys.length;
+    var key;
+    while (i--) {
+        key = keys[i];
+        _.define(target, key, src[key]);
+    }
 }
 
 /**
@@ -54,26 +55,27 @@ function copyAugment (target, src, keys) {
  * @constructor
  */
 
-function Observer (value, type) {
-  this.id = ++uid
-  this.value = value
-  this.active = true
-  this.deps = []
-  _.define(value, '__ob__', this)
-  if (type === ARRAY) {
-    var augment = config.proto && _.hasProto
-      ? protoAugment
-      : copyAugment
-    augment(value, arrayMethods, arrayKeys)
-    this.observeArray(value)
-  } else if (type === OBJECT) {
-    this.walk(value)
-  }
+function Observer(value, type) {
+    this.id = ++uid;
+    //* value is the data to observe actually
+    this.value = value;
+    this.active = true;
+    this.deps = [];
+    _.define(value, '__ob__', this); //* NOTE: what is __ob__? personal defined name here to save `this(observer)`?
+    //* array and obj are differnt, need different ways to observe
+    //* ignore array first now, focus on obj!
+    if (type === ARRAY) {
+        var augment = config.proto && _.hasProto ? protoAugment : copyAugment;
+        augment(value, arrayMethods, arrayKeys);
+        this.observeArray(value);
+    } else if (type === OBJECT) {
+        this.walk(value);
+    }
 }
 
-Observer.target = null
+Observer.target = null;
 
-var p = Observer.prototype
+var p = Observer.prototype;
 
 /**
  * Attempt to create an observer instance for a value,
@@ -86,21 +88,21 @@ var p = Observer.prototype
  */
 
 Observer.create = function (value) {
-  if (
-    value &&
-    value.hasOwnProperty('__ob__') &&
-    value.__ob__ instanceof Observer
-  ) {
-    return value.__ob__
-  } else if (_.isArray(value)) {
-    return new Observer(value, ARRAY)
-  } else if (
-    _.isPlainObject(value) &&
-    !value._isVue // avoid Vue instance
-  ) {
-    return new Observer(value, OBJECT)
-  }
-}
+    if (
+        value &&
+        value.hasOwnProperty('__ob__') &&
+        value.__ob__ instanceof Observer
+    ) {
+        return value.__ob__;
+    } else if (_.isArray(value)) {
+        return new Observer(value, ARRAY);
+    } else if (
+        _.isPlainObject(value) &&
+        !value._isVue // avoid Vue instance
+    ) {
+        return new Observer(value, OBJECT);
+    }
+};
 
 /**
  * Walk through each property and convert them into
@@ -112,17 +114,18 @@ Observer.create = function (value) {
  */
 
 p.walk = function (obj) {
-  var keys = Object.keys(obj)
-  var i = keys.length
-  var key, prefix
-  while (i--) {
-    key = keys[i]
-    prefix = key.charCodeAt(0)
-    if (prefix !== 0x24 && prefix !== 0x5F) { // skip $ or _
-      this.convert(key, obj[key])
+    var keys = Object.keys(obj);
+    var i = keys.length;
+    var key, prefix;
+    while (i--) {
+        key = keys[i];
+        prefix = key.charCodeAt(0);
+        if (prefix !== 0x24 && prefix !== 0x5f) {
+            // skip $ or _
+            this.convert(key, obj[key]);
+        }
     }
-  }
-}
+};
 
 /**
  * Try to carete an observer for a child value,
@@ -133,8 +136,8 @@ p.walk = function (obj) {
  */
 
 p.observe = function (val) {
-  return Observer.create(val)
-}
+    return Observer.create(val);
+};
 
 /**
  * Observe a list of Array items.
@@ -143,11 +146,11 @@ p.observe = function (val) {
  */
 
 p.observeArray = function (items) {
-  var i = items.length
-  while (i--) {
-    this.observe(items[i])
-  }
-}
+    var i = items.length;
+    while (i--) {
+        this.observe(items[i]);
+    }
+};
 
 /**
  * Convert a property into getter/setter so we can emit
@@ -158,41 +161,46 @@ p.observeArray = function (items) {
  */
 
 p.convert = function (key, val) {
-  var ob = this
-  var childOb = ob.observe(val)
-  var dep = new Dep()
-  if (childOb) {
-    childOb.deps.push(dep)
-  }
-  Object.defineProperty(ob.value, key, {
-    enumerable: true,
-    configurable: true,
-    get: function () {
-      // Observer.target is a watcher whose getter is
-      // currently being evaluated.
-      if (ob.active && Observer.target) {
-        Observer.target.addDep(dep)
-      }
-      return val
-    },
-    set: function (newVal) {
-      if (newVal === val) return
-      // remove dep from old value
-      var oldChildOb = val && val.__ob__
-      if (oldChildOb) {
-        var oldDeps = oldChildOb.deps
-        oldDeps.splice(oldDeps.indexOf(dep), 1)
-      }
-      val = newVal
-      // add dep to new value
-      var newChildOb = ob.observe(newVal)
-      if (newChildOb) {
-        newChildOb.deps.push(dep)
-      }
-      dep.notify()
+    var ob = this;
+    var childOb = ob.observe(val); // TODO: what will ob.observe return?
+    var dep = new Dep();
+    //* NOTE: why childOb and dep here?
+    if (childOb) {
+        childOb.deps.push(dep);
     }
-  })
-}
+    Object.defineProperty(ob.value, key, {
+        enumerable: true,
+        configurable: true,
+        get: function () {
+            // Observer.target is a watcher whose getter is
+            // currently being evaluated.
+            //* NOTE: here it is the Observer.target that save watcher!! not Dep...
+            if (ob.active && Observer.target) {
+                //* NOTE: also, it calls target's (actually a watch) own addDep method, not dep.depend() to add watcher...
+                Observer.target.addDep(dep);
+            }
+            return val;
+        },
+        set: function (newVal) {
+            if (newVal === val) return;
+            // remove dep from old value
+            //* NOTE: still cannot understand here, about oldChildOb
+
+            var oldChildOb = val && val.__ob__;
+            if (oldChildOb) {
+                var oldDeps = oldChildOb.deps;
+                oldDeps.splice(oldDeps.indexOf(dep), 1);
+            }
+            val = newVal;
+            // add dep to new value
+            var newChildOb = ob.observe(newVal);
+            if (newChildOb) {
+                newChildOb.deps.push(dep);
+            }
+            dep.notify();
+        },
+    });
+};
 
 /**
  * Notify change on all self deps on an observer.
@@ -201,12 +209,13 @@ p.convert = function (key, val) {
  * Object's $add/$delete are called.
  */
 
+//* this is like a manually forced update, so need to store all deps in obj
 p.notify = function () {
-  var deps = this.deps
-  for (var i = 0, l = deps.length; i < l; i++) {
-    deps[i].notify()
-  }
-}
+    var deps = this.deps;
+    for (var i = 0, l = deps.length; i < l; i++) {
+        deps[i].notify();
+    }
+};
 
 /**
  * Add an owner vm, so that when $add/$delete mutations
@@ -216,10 +225,10 @@ p.notify = function () {
  *
  * @param {Vue} vm
  */
-
+//* TODO: need to learn vue's $add/$delete and $data
 p.addVm = function (vm) {
-  (this.vms = this.vms || []).push(vm)
-}
+    (this.vms = this.vms || []).push(vm);
+};
 
 /**
  * Remove an owner vm. This is called when the object is
@@ -229,7 +238,7 @@ p.addVm = function (vm) {
  */
 
 p.removeVm = function (vm) {
-  this.vms.splice(this.vms.indexOf(vm), 1)
-}
+    this.vms.splice(this.vms.indexOf(vm), 1);
+};
 
-module.exports = Observer
+module.exports = Observer;

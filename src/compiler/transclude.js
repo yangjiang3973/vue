@@ -1,7 +1,7 @@
-var _ = require('../util')
-var config = require('../config')
-var templateParser = require('../parsers/template')
-var transcludedFlagAttr = '__vue__transcluded'
+var _ = require('../util');
+var config = require('../config');
+var templateParser = require('../parsers/template');
+var transcludedFlagAttr = '__vue__transcluded';
 
 /**
  * Process an element or a DocumentFragment based on a
@@ -15,44 +15,45 @@ var transcludedFlagAttr = '__vue__transcluded'
  * @return {Element|DocumentFragment}
  */
 
-module.exports = function transclude (el, options) {
-  if (options && options._asComponent) {
-    // mutating the options object here assuming the same
-    // object will be used for compile right after this
-    options._transcludedAttrs = extractAttrs(el.attributes)
-    // Mark content nodes and attrs so that the compiler
-    // knows they should be compiled in parent scope.
-    var i = el.childNodes.length
-    while (i--) {
-      var node = el.childNodes[i]
-      if (node.nodeType === 1) {
-        node.setAttribute(transcludedFlagAttr, '')
-      } else if (node.nodeType === 3 && node.data.trim()) {
-        // wrap transcluded textNodes in spans, because
-        // raw textNodes can't be persisted through clones
-        // by attaching attributes.
-        var wrapper = document.createElement('span')
-        wrapper.textContent = node.data
-        wrapper.setAttribute('__vue__wrap', '')
-        wrapper.setAttribute(transcludedFlagAttr, '')
-        el.replaceChild(wrapper, node)
-      }
+module.exports = function transclude(el, options) {
+    if (options && options._asComponent) {
+        // mutating the options object here assuming the same
+        // object will be used for compile right after this
+        options._transcludedAttrs = extractAttrs(el.attributes);
+        // Mark content nodes and attrs so that the compiler
+        // knows they should be compiled in parent scope.
+        var i = el.childNodes.length;
+        while (i--) {
+            var node = el.childNodes[i];
+            //* 1=ELEMENT_NODE
+            if (node.nodeType === 1) {
+                node.setAttribute(transcludedFlagAttr, ''); //* transcludedFlagAttr = '__vue__transcluded';
+            } else if (node.nodeType === 3 && node.data.trim()) {
+                // wrap transcluded textNodes in spans, because
+                // raw textNodes can't be persisted through clones
+                // by attaching attributes.
+                var wrapper = document.createElement('span');
+                wrapper.textContent = node.data;
+                wrapper.setAttribute('__vue__wrap', '');
+                wrapper.setAttribute(transcludedFlagAttr, '');
+                el.replaceChild(wrapper, node);
+            }
+        }
     }
-  }
-  // for template tags, what we want is its content as
-  // a documentFragment (for block instances)
-  if (el.tagName === 'TEMPLATE') {
-    el = templateParser.parse(el)
-  }
-  if (options && options.template) {
-    el = transcludeTemplate(el, options)
-  }
-  if (el instanceof DocumentFragment) {
-    _.prepend(document.createComment('v-start'), el)
-    el.appendChild(document.createComment('v-end'))
-  }
-  return el
-}
+    // for template tags, what we want is its content as
+    // a documentFragment (for block instances)
+    if (el.tagName === 'TEMPLATE') {
+        el = templateParser.parse(el);
+    }
+    if (options && options.template) {
+        el = transcludeTemplate(el, options);
+    }
+    if (el instanceof DocumentFragment) {
+        _.prepend(document.createComment('v-start'), el);
+        el.appendChild(document.createComment('v-end'));
+    }
+    return el;
+};
 
 /**
  * Process the template option.
@@ -63,42 +64,42 @@ module.exports = function transclude (el, options) {
  * @return {Element|DocumentFragment}
  */
 
-function transcludeTemplate (el, options) {
-  var template = options.template
-  var frag = templateParser.parse(template, true)
-  if (!frag) {
-    _.warn('Invalid template option: ' + template)
-  } else {
-    var rawContent = options._content || _.extractContent(el)
-    if (options.replace) {
-      if (frag.childNodes.length > 1) {
-        // this is a block instance which has no root node.
-        // however, the container in the parent template
-        // (which is replaced here) may contain v-with and
-        // paramAttributes that still need to be compiled
-        // for the child. we store all the container
-        // attributes on the options object and pass it down
-        // to the compiler.
-        var containerAttrs = options._containerAttrs = {}
-        var i = el.attributes.length
-        while (i--) {
-          var attr = el.attributes[i]
-          containerAttrs[attr.name] = attr.value
-        }
-        transcludeContent(frag, rawContent)
-        return frag
-      } else {
-        var replacer = frag.firstChild
-        _.copyAttributes(el, replacer)
-        transcludeContent(replacer, rawContent)
-        return replacer
-      }
+function transcludeTemplate(el, options) {
+    var template = options.template;
+    var frag = templateParser.parse(template, true);
+    if (!frag) {
+        _.warn('Invalid template option: ' + template);
     } else {
-      el.appendChild(frag)
-      transcludeContent(el, rawContent)
-      return el
+        var rawContent = options._content || _.extractContent(el);
+        if (options.replace) {
+            if (frag.childNodes.length > 1) {
+                // this is a block instance which has no root node.
+                // however, the container in the parent template
+                // (which is replaced here) may contain v-with and
+                // paramAttributes that still need to be compiled
+                // for the child. we store all the container
+                // attributes on the options object and pass it down
+                // to the compiler.
+                var containerAttrs = (options._containerAttrs = {});
+                var i = el.attributes.length;
+                while (i--) {
+                    var attr = el.attributes[i];
+                    containerAttrs[attr.name] = attr.value;
+                }
+                transcludeContent(frag, rawContent);
+                return frag;
+            } else {
+                var replacer = frag.firstChild;
+                _.copyAttributes(el, replacer);
+                transcludeContent(replacer, rawContent);
+                return replacer;
+            }
+        } else {
+            el.appendChild(frag);
+            transcludeContent(el, rawContent);
+            return el;
+        }
     }
-  }
 }
 
 /**
@@ -111,51 +112,54 @@ function transcludeTemplate (el, options) {
  * @param {Element} raw
  */
 
-function transcludeContent (el, raw) {
-  var outlets = getOutlets(el)
-  var i = outlets.length
-  if (!i) return
-  var outlet, select, selected, j, main
+function transcludeContent(el, raw) {
+    var outlets = getOutlets(el);
+    var i = outlets.length;
+    if (!i) return;
+    var outlet, select, selected, j, main;
 
-  function isDirectChild (node) {
-    return node.parentNode === raw
-  }
+    function isDirectChild(node) {
+        return node.parentNode === raw;
+    }
 
-  // first pass, collect corresponding content
-  // for each outlet.
-  while (i--) {
-    outlet = outlets[i]
-    if (raw) {
-      select = outlet.getAttribute('select')
-      if (select) {  // select content
-        selected = raw.querySelectorAll(select)
-        if (selected.length) {
-          // according to Shadow DOM spec, `select` can
-          // only select direct children of the host node.
-          // enforcing this also fixes #786.
-          selected = [].filter.call(selected, isDirectChild)
+    // first pass, collect corresponding content
+    // for each outlet.
+    while (i--) {
+        outlet = outlets[i];
+        if (raw) {
+            select = outlet.getAttribute('select');
+            if (select) {
+                // select content
+                selected = raw.querySelectorAll(select);
+                if (selected.length) {
+                    // according to Shadow DOM spec, `select` can
+                    // only select direct children of the host node.
+                    // enforcing this also fixes #786.
+                    selected = [].filter.call(selected, isDirectChild);
+                }
+                outlet.content = selected.length
+                    ? selected
+                    : _.toArray(outlet.childNodes);
+            } else {
+                // default content
+                main = outlet;
+            }
+        } else {
+            // fallback content
+            outlet.content = _.toArray(outlet.childNodes);
         }
-        outlet.content = selected.length
-          ? selected
-          : _.toArray(outlet.childNodes)
-      } else { // default content
-        main = outlet
-      }
-    } else { // fallback content
-      outlet.content = _.toArray(outlet.childNodes)
     }
-  }
-  // second pass, actually insert the contents
-  for (i = 0, j = outlets.length; i < j; i++) {
-    outlet = outlets[i]
-    if (outlet !== main) {
-      insertContentAt(outlet, outlet.content)
+    // second pass, actually insert the contents
+    for (i = 0, j = outlets.length; i < j; i++) {
+        outlet = outlets[i];
+        if (outlet !== main) {
+            insertContentAt(outlet, outlet.content);
+        }
     }
-  }
-  // finally insert the main content
-  if (main) {
-    insertContentAt(main, _.toArray(raw.childNodes))
-  }
+    // finally insert the main content
+    if (main) {
+        insertContentAt(main, _.toArray(raw.childNodes));
+    }
 }
 
 /**
@@ -165,13 +169,13 @@ function transcludeContent (el, raw) {
  * @return {Array}
  */
 
-var concat = [].concat
-function getOutlets (el) {
-  return _.isArray(el)
-    ? concat.apply([], el.map(getOutlets))
-    : el.querySelectorAll
-      ? _.toArray(el.querySelectorAll('content'))
-      : []
+var concat = [].concat;
+function getOutlets(el) {
+    return _.isArray(el)
+        ? concat.apply([], el.map(getOutlets))
+        : el.querySelectorAll
+        ? _.toArray(el.querySelectorAll('content'))
+        : [];
 }
 
 /**
@@ -182,14 +186,14 @@ function getOutlets (el) {
  * @param {Array} contents
  */
 
-function insertContentAt (outlet, contents) {
-  // not using util DOM methods here because
-  // parentNode can be cached
-  var parent = outlet.parentNode
-  for (var i = 0, j = contents.length; i < j; i++) {
-    parent.insertBefore(contents[i], outlet)
-  }
-  parent.removeChild(outlet)
+function insertContentAt(outlet, contents) {
+    // not using util DOM methods here because
+    // parentNode can be cached
+    var parent = outlet.parentNode;
+    for (var i = 0, j = contents.length; i < j; i++) {
+        parent.insertBefore(contents[i], outlet);
+    }
+    parent.removeChild(outlet);
 }
 
 /**
@@ -201,14 +205,15 @@ function insertContentAt (outlet, contents) {
  * @param {NameNodeMap} attrs
  */
 
-function extractAttrs (attrs) {
-  if (!attrs) return null
-  var res = {}
-  var vwith = config.prefix + 'with'
-  var i = attrs.length
-  while (i--) {
-    var name = attrs[i].name
-    if (name !== vwith) res[name] = true
-  }
-  return res
+//* NOTE: v-with already removed in newer versions
+function extractAttrs(attrs) {
+    if (!attrs) return null;
+    var res = {};
+    var vwith = config.prefix + 'with'; //* v-with allows a child ViewModel to inherit data from the parents.
+    var i = attrs.length;
+    while (i--) {
+        var name = attrs[i].name;
+        if (name !== vwith) res[name] = true;
+    }
+    return res;
 }
