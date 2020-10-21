@@ -4,17 +4,17 @@ let vm = new Vue({
     el: '#app',
     data: {
         word: 'Hello World!',
-        msg: 'greeting',
+        // msg: 'greeting',
     },
     methods: {
-        changeWord() {
+        changeWord: function () {
             this.word = 'fuck world!';
         },
     },
 });
 
-setTimeout(() => {
-    vm.word = 'fuck';
-    vm.msg = 'cao!';
-    console.log(vm);
-}, 2000);
+// setTimeout(() => {
+//     vm.word = 'fuck';
+//     vm.msg = 'cao!';
+//     console.log(vm);
+// }, 2000);

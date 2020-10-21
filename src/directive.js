@@ -57,7 +57,7 @@ p._bind = function (def) {
     if (typeof def === 'function') {
         this.update = def;
     } else {
-        _.extend(this, def);
+        _.extend(this, def); //* def has update and bind, add to this(i.e. this.bind, this.update)
     }
     this._watcherExp = this.expression;
     this._checkDynamicLiteral();
@@ -81,7 +81,7 @@ p._bind = function (def) {
             : function () {}); // noop if no update is provided
         // use raw expression as identifier because filters
         // make them different watchers
-        var watcher = this.vm._watchers[this.raw];
+        var watcher = this.vm._watchers[this.raw]; //* NOTE: ???why
         // v-repeat always creates a new watcher because it has
         // a special filter that's bound to its directive
         // instance.

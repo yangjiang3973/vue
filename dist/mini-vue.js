@@ -7,7 +7,6 @@
   \**********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -197,7 +196,6 @@ ansiHTML.reset()
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 2:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -890,7 +888,6 @@ function modifyListenerCount(vm, event, count) {
   \***************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports is used directly at 133:21-28 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -1248,7 +1245,6 @@ exports.push = function (job) {
   \**********************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 119:0-14 */
 /***/ ((module) => {
 
 /**
@@ -1379,7 +1375,6 @@ module.exports = Cache;
   \*********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 11:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -1416,7 +1411,9 @@ function compile(el, options, partial, transcluded) {
   // for the attributes found on the container, if any.
   // options._containerAttrs are collected during transclusion.
 
-  var nodeLinkFn = isBlock ? compileBlockContainer(options._containerAttrs, params, options) : compileNode(el, options); // link function for the childNodes
+  var nodeLinkFn = isBlock ? compileBlockContainer(options._containerAttrs, params, options) : compileNode(el, options); //* usually come here
+  // link function for the childNodes
+  //* Q: what is the value of chuildLinkFn???
 
   var childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && el.tagName !== 'SCRIPT' && el.hasChildNodes() ? compileNodeList(el.childNodes, options) : null;
   /**
@@ -1621,7 +1618,16 @@ function makeNodeLinkFn(directives) {
     var dir, j, k, target;
 
     while (i--) {
-      dir = directives[i]; // a directive can be transcluded if it's written
+      dir = directives[i];
+      /* NOTE: dir is an obj:
+      {
+          def: {bind: f, update: f},
+          descriptor: [{raw:''word, expressioin: 'word'}],
+          name: 'text'
+          transcluded: undefined
+      }
+      */
+      // a directive can be transcluded if it's written
       // on a component's container in its parent tempalte.
 
       target = dir.transcluded ? vm.$parent : vm;
@@ -1760,7 +1766,8 @@ function compileNodeList(nodeList, options) {
   for (var i = 0, l = nodeList.length; i < l; i++) {
     node = nodeList[i];
     nodeLinkFn = compileNode(node, options);
-    childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && node.tagName !== 'SCRIPT' && node.hasChildNodes() ? compileNodeList(node.childNodes, options) : null;
+    childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && node.tagName !== 'SCRIPT' && node.hasChildNodes() ? compileNodeList(node.childNodes, options) : null; //* NOTE: save all linkFns here
+
     linkFns.push(nodeLinkFn, childLinkFn);
   }
 
@@ -1776,7 +1783,8 @@ function compileNodeList(nodeList, options) {
 
 function makeChildLinkFn(linkFns) {
   return function childLinkFn(vm, nodes, host) {
-    var node, nodeLinkFn, childrenLinkFn;
+    var node, nodeLinkFn, childrenLinkFn; //* make a nest for loop is better to understand
+    //* n个node（n），每个node有linkFns（l，i）
 
     for (var i = 0, n = 0, l = linkFns.length; i < l; n++) {
       node = nodes[n];
@@ -1967,7 +1975,7 @@ function collectDirectives(el, options) {
 
     if (attrName.indexOf(config.prefix) === 0) {
       dirName = attrName.slice(config.prefix.length);
-      dirDef = options.directives[dirName];
+      dirDef = options.directives[dirName]; //* NOTE: why options have dirDef??? options saved these at init time
 
       _.assertAsset(dirDef, 'directive', dirName);
 
@@ -1975,6 +1983,7 @@ function collectDirectives(el, options) {
         dirs.push({
           name: dirName,
           descriptors: dirParser.parse(attr.value),
+          //* {raw: 'word', expression: 'word'}
           def: dirDef,
           transcluded: transcluded
         });
@@ -2072,7 +2081,6 @@ function checkTransclusion(el) {
   \************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 20:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -2324,7 +2332,6 @@ function extractAttrs(attrs) {
   \***********************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 1:0-14 */
 /***/ ((module) => {
 
 module.exports = {
@@ -2411,7 +2418,6 @@ Object.defineProperty(module.exports, "delimiters", ({
   \**************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 235:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -2477,7 +2483,8 @@ p._bind = function (def) {
   if (typeof def === 'function') {
     this.update = def;
   } else {
-    _.extend(this, def);
+    _.extend(this, def); //* def has update and bind, add to this(i.e. this.bind, this.update)
+
   }
 
   this._watcherExp = this.expression;
@@ -2499,7 +2506,8 @@ p._bind = function (def) {
     // use raw expression as identifier because filters
     // make them different watchers
 
-    var watcher = this.vm._watchers[this.raw]; // v-repeat always creates a new watcher because it has
+    var watcher = this.vm._watchers[this.raw]; //* NOTE: ???why
+    // v-repeat always creates a new watcher because it has
     // a special filter that's bound to its directive
     // instance.
 
@@ -2658,7 +2666,6 @@ module.exports = Directive;
   \********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 4:0-14 */
 /***/ ((module) => {
 
 // xlink
@@ -2696,7 +2703,6 @@ function xlinkHandler(value) {
   \*********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 6:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -2728,7 +2734,6 @@ module.exports = function (value) {
   \*********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var config = __webpack_require__(/*! ../config */ "./src/config.js");
@@ -2750,7 +2755,6 @@ module.exports = {
   \*************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 5:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -2999,7 +3003,6 @@ module.exports = {
   \******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 1:0-14 */
 /***/ ((module) => {
 
 module.exports = {
@@ -3020,7 +3023,6 @@ module.exports = {
   \**********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3063,7 +3065,6 @@ module.exports = {
   \********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 5:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3114,7 +3115,6 @@ module.exports = {
   \******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 9:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3320,7 +3320,6 @@ exports.events = __webpack_require__(/*! ./events */ "./src/directives/events.js
   \******************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../../util */ "./src/util/index.js");
@@ -3356,7 +3355,6 @@ module.exports = {
   \*****************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../../util */ "./src/util/index.js");
@@ -3518,7 +3516,6 @@ module.exports = {
   \***************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 9:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../../util */ "./src/util/index.js");
@@ -3583,7 +3580,6 @@ module.exports = {
   \***************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../../util */ "./src/util/index.js");
@@ -3620,7 +3616,6 @@ module.exports = {
   \****************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 7:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../../util */ "./src/util/index.js");
@@ -3811,7 +3806,6 @@ function indexOf(arr, val) {
   \******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3877,7 +3871,6 @@ module.exports = {
   \***********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 7:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3943,7 +3936,6 @@ module.exports = {
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -3976,7 +3968,6 @@ module.exports = {
   \**********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 21:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -4570,7 +4561,6 @@ function range(n) {
   \********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var transition = __webpack_require__(/*! ../transition */ "./src/transition/index.js");
@@ -4590,7 +4580,6 @@ module.exports = function (value) {
   \*********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 11:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -4711,14 +4700,13 @@ function prefix(prop) {
   \********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
 
 module.exports = {
   bind: function bind() {
-    this.attr = this.el.nodeType === 3 ? 'nodeValue' : 'textContent';
+    this.attr = this.el.nodeType === 3 ? 'nodeValue' : 'textContent'; //* difference between nodeValue and data for textNode
   },
   update: function update(value) {
     this.el[this.attr] = _.toString(value);
@@ -4733,7 +4721,6 @@ module.exports = {
   \**************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 1:0-14 */
 /***/ ((module) => {
 
 module.exports = {
@@ -4765,7 +4752,6 @@ module.exports = {
   \********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 8:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -4947,7 +4933,6 @@ function contains(val, search) {
   \******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports is used directly at 126:9-16 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -5132,9 +5117,11 @@ exports._compile = function (el) {
     this._initElement(el); // compile and link the rest
     //* NOTE: main logic is in this file
     //* it will return a function and run that function here
+    // compile(el, options)(this, el);
 
 
-    compile(el, options)(this, el); // finally replace original
+    var runLinkStage = compile(el, options);
+    runLinkStage(this, el); // finally replace original
 
     if (options.replace) {
       _.replace(original, el);
@@ -5818,20 +5805,19 @@ var Vue = __webpack_require__(/*! ./vue.js */ "./src/vue.js");
 var vm = new Vue({
   el: '#app',
   data: {
-    word: 'Hello World!',
-    msg: 'greeting'
+    word: 'Hello World!' // msg: 'greeting',
+
   },
   methods: {
     changeWord: function changeWord() {
       this.word = 'fuck world!';
     }
   }
-});
-setTimeout(function () {
-  vm.word = 'fuck';
-  vm.msg = 'cao!';
-  console.log(vm);
-}, 2000);
+}); // setTimeout(() => {
+//     vm.word = 'fuck';
+//     vm.msg = 'cao!';
+//     console.log(vm);
+// }, 2000);
 
 /***/ }),
 
@@ -5841,7 +5827,6 @@ setTimeout(function () {
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 81:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -5934,7 +5919,6 @@ module.exports = arrayMethods;
   \*****************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 54:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var uid = 0;
@@ -6000,7 +5984,6 @@ module.exports = Dep;
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 255:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -6814,9 +6797,6 @@ exports.pathTestRE = pathTestRE;
 /*! export set [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports.compileGetter(...) prevents optimization as exports is passed as call context at 254:16-37 */
-/*! CommonJS bailout: exports.parse(...) prevents optimization as exports is passed as call context at 270:9-22 */
-/*! CommonJS bailout: exports.parse(...) prevents optimization as exports is passed as call context at 287:11-24 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -7147,8 +7127,6 @@ exports.set = function (obj, path, val) {
 /*! export parse [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports.clone(...) prevents optimization as exports is passed as call context at 89:14-27 */
-/*! CommonJS bailout: exports.clone(...) prevents optimization as exports is passed as call context at 212:25-38 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -7560,7 +7538,6 @@ function inlineFilters(exp) {
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 173:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -7776,8 +7753,6 @@ module.exports = function (el, direction, op, data, cb) {
 /*! export removeThenAppend [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports.before(...) prevents optimization as exports is passed as call context at 80:4-18 */
-/*! CommonJS bailout: exports.remove(...) prevents optimization as exports is passed as call context at 98:4-18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -7935,7 +7910,6 @@ var apply = exports.apply = function (el, direction, op, vm, cb) {
   \******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
 /***/ ((module) => {
 
 /**
@@ -8002,7 +7976,6 @@ module.exports = function (el, direction, op, data, def, vm, cb) {
 /*! export warn [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports.warn(...) prevents optimization as exports is passed as call context at 49:6-18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var config = __webpack_require__(/*! ../config */ "./src/config.js");
@@ -8080,8 +8053,6 @@ function enableDebug() {
 /*! export replace [provided] [no usage info] [missing usage info prevents renaming] */
 /*! other exports [not provided] [no usage info] */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports.before(...) prevents optimization as exports is passed as call context at 60:4-18 */
-/*! CommonJS bailout: exports.before(...) prevents optimization as exports is passed as call context at 85:4-18 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var config = __webpack_require__(/*! ../config */ "./src/config.js");
@@ -8502,11 +8473,6 @@ exports.applyFilters = function (value, filters, vm, oldVal) {
   \***************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_exports__, __webpack_require__ */
-/*! CommonJS bailout: exports is used directly at 4:7-14 */
-/*! CommonJS bailout: exports is used directly at 5:7-14 */
-/*! CommonJS bailout: exports is used directly at 6:7-14 */
-/*! CommonJS bailout: exports is used directly at 7:7-14 */
-/*! CommonJS bailout: exports is used directly at 8:7-14 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 var lang = __webpack_require__(/*! ./lang */ "./src/util/lang.js");
@@ -8786,7 +8752,6 @@ exports.debounce = function (func, wait) {
   \**********************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 209:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./index */ "./src/util/index.js");
@@ -9034,7 +8999,6 @@ module.exports = function mergeOptions(parent, child, vm) {
   \********************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 82:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -9107,7 +9071,8 @@ extend(p, __webpack_require__(/*! ./instance/init */ "./src/instance/init.js"));
 extend(p, __webpack_require__(/*! ./instance/events */ "./src/instance/events.js"));
 extend(p, __webpack_require__(/*! ./instance/scope */ "./src/instance/scope.js")); //* this._initScope();  //都绑到vue上，但是实在_init里call
 
-extend(p, __webpack_require__(/*! ./instance/compile */ "./src/instance/compile.js"));
+extend(p, __webpack_require__(/*! ./instance/compile */ "./src/instance/compile.js")); //* _bindDir应该就是在这里添加上的
+
 /**
  * Mixin public API methods
  */
@@ -9128,7 +9093,6 @@ module.exports = _.Vue = Vue;
   \************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 275:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -9182,7 +9146,8 @@ function Watcher(vm, expression, cb, options) {
   } // parse expression for getter/setter
 
 
-  var res = expParser.parse(expression, options.twoWay);
+  var res = expParser.parse(expression, options.twoWay); //* NOTE: need to read this part
+
   this.getter = res.get;
   this.setter = res.set;
   this.value = this.get();
@@ -9415,7 +9380,6 @@ module.exports = Watcher;
   \*****************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 56:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -10352,7 +10316,6 @@ exports.XmlEntities = XmlEntities;
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_require__, __webpack_exports__, module */
-/*! CommonJS bailout: this is used directly at 16:2-6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -10639,9 +10602,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
   \***********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_exports__, module.loaded, module.id, module, __webpack_require__.nmd, top-level-this-exports, __webpack_require__.g, __webpack_require__, __webpack_require__.* */
-/*! CommonJS bailout: this is used directly at 530:2-6 */
-/*! CommonJS bailout: exports is used directly at 5:49-56 */
-/*! CommonJS bailout: exports is used directly at 6:23-30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* module decorator */ module = __webpack_require__.nmd(module);
@@ -11174,7 +11134,6 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.3.2 by @mathia
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 31:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -11268,7 +11227,6 @@ module.exports = function(qs, sep, eq, options) {
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 40:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -11370,7 +11328,6 @@ exports.encode = exports.stringify = __webpack_require__(/*! ./encode */ "./node
   \************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__.g, __webpack_require__.* */
-/*! CommonJS bailout: module.exports is used directly at 2:72-86 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /* sockjs-client v1.4.0 | http://sockjs.org | MIT license */
@@ -17201,7 +17158,6 @@ module.exports = Url;
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 4:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -17972,7 +17928,6 @@ Url.prototype.parseHost = function() {
   \**********************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -18002,7 +17957,6 @@ module.exports = {
   \*************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -18040,7 +17994,6 @@ module.exports = /*#__PURE__*/function () {
   \***************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 32:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18320,7 +18273,6 @@ socket(socketUrl, onSocketMessage);
   \**************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 117:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18453,7 +18405,6 @@ module.exports = {
   \*************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_require__, module */
-/*! CommonJS bailout: module.exports is used directly at 52:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18519,7 +18470,6 @@ module.exports = socket;
   \****************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 88:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18620,7 +18570,6 @@ module.exports = createSocketUrl;
   \***********************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 22:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -18655,7 +18604,6 @@ module.exports = getCurrentScriptSource;
   \****************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_require__, module */
-/*! CommonJS bailout: module.exports is used directly at 46:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18717,7 +18665,6 @@ module.exports = {
   \**********************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 55:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -18785,7 +18732,6 @@ module.exports = reloadApp;
   \************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 14:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -18812,7 +18758,6 @@ module.exports = sendMsg;
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 2:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var EventEmitter = __webpack_require__(/*! events */ "./node_modules/_events@3.2.0@events/events.js");
@@ -18827,7 +18772,6 @@ module.exports = new EventEmitter();
   \*********************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 5:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /*
@@ -18884,7 +18828,6 @@ module.exports = function (updatedModules, renewedModules) {
   \********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
-/*! CommonJS bailout: module.exports is used directly at 21:0-14 */
 /***/ ((module) => {
 
 var logLevel = "info";
@@ -19154,7 +19097,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "60e96a31e101bd9232cb"
+/******/ 		__webpack_require__.h = () => "ceda7f698a90d22e6432"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

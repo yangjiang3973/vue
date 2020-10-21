@@ -33,8 +33,9 @@ function compile(el, options, partial, transcluded) {
     // options._containerAttrs are collected during transclusion.
     var nodeLinkFn = isBlock
         ? compileBlockContainer(options._containerAttrs, params, options)
-        : compileNode(el, options);
+        : compileNode(el, options); //* usually come here
     // link function for the childNodes
+    //* Q: what is the value of chuildLinkFn???
     var childLinkFn =
         !(nodeLinkFn && nodeLinkFn.terminal) &&
         el.tagName !== 'SCRIPT' &&
@@ -230,6 +231,14 @@ function makeNodeLinkFn(directives) {
         var dir, j, k, target;
         while (i--) {
             dir = directives[i];
+            /* NOTE: dir is an obj:
+            {
+                def: {bind: f, update: f},
+                descriptor: [{raw:''word, expressioin: 'word'}],
+                name: 'text'
+                transcluded: undefined
+            }
+            */
             // a directive can be transcluded if it's written
             // on a component's container in its parent tempalte.
             target = dir.transcluded ? vm.$parent : vm;
@@ -365,6 +374,8 @@ function compileNodeList(nodeList, options) {
             node.hasChildNodes()
                 ? compileNodeList(node.childNodes, options)
                 : null;
+
+        //* NOTE: save all linkFns here
         linkFns.push(nodeLinkFn, childLinkFn);
     }
     return linkFns.length ? makeChildLinkFn(linkFns) : null;
@@ -380,6 +391,8 @@ function compileNodeList(nodeList, options) {
 function makeChildLinkFn(linkFns) {
     return function childLinkFn(vm, nodes, host) {
         var node, nodeLinkFn, childrenLinkFn;
+        //* make a nest for loop is better to understand
+        //* n个node（n），每个node有linkFns（l，i）
         for (var i = 0, n = 0, l = linkFns.length; i < l; n++) {
             node = nodes[n];
             nodeLinkFn = linkFns[i++];
@@ -567,12 +580,12 @@ function collectDirectives(el, options) {
             options._transcludedAttrs && options._transcludedAttrs[attrName];
         if (attrName.indexOf(config.prefix) === 0) {
             dirName = attrName.slice(config.prefix.length);
-            dirDef = options.directives[dirName];
+            dirDef = options.directives[dirName]; //* NOTE: why options have dirDef??? options saved these at init time
             _.assertAsset(dirDef, 'directive', dirName);
             if (dirDef) {
                 dirs.push({
                     name: dirName,
-                    descriptors: dirParser.parse(attr.value),
+                    descriptors: dirParser.parse(attr.value), //* {raw: 'word', expression: 'word'}
                     def: dirDef,
                     transcluded: transcluded,
                 });

@@ -70,7 +70,7 @@ Object.defineProperty(p, '$data', {
 extend(p, require('./instance/init'));
 extend(p, require('./instance/events'));
 extend(p, require('./instance/scope')); //* this._initScope();  //都绑到vue上，但是实在_init里call
-extend(p, require('./instance/compile'));
+extend(p, require('./instance/compile')); //* _bindDir应该就是在这里添加上的
 
 /**
  * Mixin public API methods

@@ -33,7 +33,9 @@ exports._compile = function (el) {
         // compile and link the rest
         //* NOTE: main logic is in this file
         //* it will return a function and run that function here
-        compile(el, options)(this, el);
+        // compile(el, options)(this, el);
+        var runLinkStage = compile(el, options);
+        runLinkStage(this, el);
         // finally replace original
         if (options.replace) {
             _.replace(original, el);

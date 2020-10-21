@@ -1,15 +1,11 @@
-var _ = require('../util')
+var _ = require('../util');
 
 module.exports = {
+    bind: function () {
+        this.attr = this.el.nodeType === 3 ? 'nodeValue' : 'textContent'; //* difference between nodeValue and data for textNode
+    },
 
-  bind: function () {
-    this.attr = this.el.nodeType === 3
-      ? 'nodeValue'
-      : 'textContent'
-  },
-
-  update: function (value) {
-    this.el[this.attr] = _.toString(value)
-  }
-  
-}
+    update: function (value) {
+        this.el[this.attr] = _.toString(value);
+    },
+};
