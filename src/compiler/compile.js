@@ -274,7 +274,7 @@ function compileTextNode(node, options) {
     if (!tokens) {
         return null;
     }
-    var frag = document.createDocumentFragment();
+    var frag = document.createDocumentFragment(); // NOTE: why use a doc fragment here and append el to it? why not use el directly
     var el, token;
     for (var i = 0, l = tokens.length; i < l; i++) {
         token = tokens[i];
@@ -350,7 +350,7 @@ function makeTextNodeLinkFn(tokens, frag) {
                 }
             }
         }
-        _.replace(el, fragClone);
+        _.replace(el, fragClone); // NOTE: replace the old text node with the new one
     };
 }
 
@@ -369,7 +369,7 @@ function compileNodeList(nodeList, options) {
         node = nodeList[i];
         nodeLinkFn = compileNode(node, options);
         childLinkFn =
-            !(nodeLinkFn && nodeLinkFn.terminal) &&
+            !(nodeLinkFn && nodeLinkFn.terminal) && //* terminal is a flag, will stop compiling sub tree.
             node.tagName !== 'SCRIPT' &&
             node.hasChildNodes()
                 ? compileNodeList(node.childNodes, options)
@@ -532,6 +532,7 @@ function checkTerminalDirectives(el, options) {
     for (var i = 0; i < 3; i++) {
         dirName = terminalDirectives[i];
         if ((value = _.attr(el, dirName))) {
+            //* NOTE: _.attr will remove the attr from el
             return makeTerminalNodeLinkFn(el, dirName, value, options);
         }
     }
@@ -553,6 +554,7 @@ function checkTerminalDirectives(el, options) {
 function makeTerminalNodeLinkFn(el, dirName, value, options) {
     var descriptor = dirParser.parse(value)[0];
     var def = options.directives[dirName];
+
     var fn = function terminalNodeLinkFn(vm, el, host) {
         vm._bindDir(dirName, el, descriptor, def, host);
     };

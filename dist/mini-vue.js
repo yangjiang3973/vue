@@ -1661,7 +1661,8 @@ function compileTextNode(node, options) {
     return null;
   }
 
-  var frag = document.createDocumentFragment();
+  var frag = document.createDocumentFragment(); // NOTE: why use a doc fragment here and append el to it? why not use el directly
+
   var el, token;
 
   for (var i = 0, l = tokens.length; i < l; i++) {
@@ -1747,7 +1748,8 @@ function makeTextNodeLinkFn(tokens, frag) {
       }
     }
 
-    _.replace(el, fragClone);
+    _.replace(el, fragClone); // NOTE: replace the old text node with the new one
+
   };
 }
 /**
@@ -1766,7 +1768,8 @@ function compileNodeList(nodeList, options) {
   for (var i = 0, l = nodeList.length; i < l; i++) {
     node = nodeList[i];
     nodeLinkFn = compileNode(node, options);
-    childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && node.tagName !== 'SCRIPT' && node.hasChildNodes() ? compileNodeList(node.childNodes, options) : null; //* NOTE: save all linkFns here
+    childLinkFn = !(nodeLinkFn && nodeLinkFn.terminal) && //* terminal is a flag, will stop compiling sub tree.
+    node.tagName !== 'SCRIPT' && node.hasChildNodes() ? compileNodeList(node.childNodes, options) : null; //* NOTE: save all linkFns here
 
     linkFns.push(nodeLinkFn, childLinkFn);
   }
@@ -1923,6 +1926,7 @@ function checkTerminalDirectives(el, options) {
     dirName = terminalDirectives[i];
 
     if (value = _.attr(el, dirName)) {
+      //* NOTE: _.attr will remove the attr from el
       return makeTerminalNodeLinkFn(el, dirName, value, options);
     }
   }
@@ -4036,7 +4040,7 @@ module.exports = {
    */
   checkIf: function checkIf() {
     if (_.attr(this.el, 'if') !== null) {
-      _.warn('Don\'t use v-if with v-repeat. ' + 'Use v-show or the "filterBy" filter instead.');
+      _.warn("Don't use v-if with v-repeat. " + 'Use v-show or the "filterBy" filter instead.');
     }
   },
 
@@ -4197,7 +4201,7 @@ module.exports = {
       vms[i] = vm; // insert if this is first run
 
       if (init) {
-        vm.$before(ref);
+        vm.$before(ref); //* NOTE: first, add all elements one by one here
       }
     } // if this is the first run, we're done.
 
@@ -5805,12 +5809,25 @@ var Vue = __webpack_require__(/*! ./vue.js */ "./src/vue.js");
 var vm = new Vue({
   el: '#app',
   data: {
-    word: 'Hello World!' // msg: 'greeting',
-
+    title: 'vue source code',
+    intro: 'current v0.11',
+    word: 'Hello World!',
+    flag: true,
+    showEl: true,
+    list: [1, 2, 3, 4, 5, 6]
   },
   methods: {
     changeWord: function changeWord() {
-      this.word = 'fuck world!';
+      this.word = 'fuck world';
+    },
+    changeFlag: function changeFlag() {
+      this.flag = !this.flag;
+    },
+    changeShow: function changeShow() {
+      this.showEl = !this.showEl;
+    },
+    addElement: function addElement() {
+      this.list.push(10);
     }
   }
 }); // setTimeout(() => {
@@ -7372,7 +7389,7 @@ var cache, tagRE, htmlRE, firstChar, lastChar;
  */
 
 function escapeRegex(str) {
-  return str.replace(regexEscapeRE, '\\$&');
+  return str.replace(regexEscapeRE, '\\$&'); //* NOTE: what is $&?
 }
 /**
  * Compile the interpolation tag regex.
@@ -7439,9 +7456,9 @@ exports.parse = function (text) {
 
 
     first = match[1].charCodeAt(0);
-    oneTime = first === 0x2A; // *
+    oneTime = first === 0x2a; // *
 
-    partial = first === 0x3E; // >
+    partial = first === 0x3e; // >
 
     value = oneTime || partial ? match[1].slice(1) : match[1];
     tokens.push({
@@ -19097,7 +19114,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "ceda7f698a90d22e6432"
+/******/ 		__webpack_require__.h = () => "e0a6aa495a126f8a751e"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
