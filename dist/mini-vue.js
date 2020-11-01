@@ -2422,6 +2422,7 @@ Object.defineProperty(module.exports, "delimiters", ({
   \**************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 237:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -2531,7 +2532,7 @@ p._bind = function (def) {
     if (this._initValue != null) {
       watcher.set(this._initValue);
     } else if (this.update) {
-      this.update(watcher.value);
+      this.update(watcher.value); //* NOTE: watcher.value will apply filters
     }
   }
 
@@ -4964,6 +4965,7 @@ exports.json = {
  */
 
 exports.capitalize = function (value) {
+  // NOTE: why need to check value !== 0?
   if (!value && value !== 0) return '';
   value = value.toString();
   return value.charAt(0).toUpperCase() + value.slice(1);
@@ -4974,6 +4976,7 @@ exports.capitalize = function (value) {
 
 
 exports.uppercase = function (value) {
+  // NOTE: why need to check value === 0?
   return value || value === 0 ? value.toString().toUpperCase() : '';
 };
 /**
@@ -5035,7 +5038,7 @@ exports.pluralize = function (value) {
 var keyCodes = {
   enter: 13,
   tab: 9,
-  'delete': 46,
+  "delete": 46,
   up: 38,
   left: 37,
   right: 39,
@@ -5605,7 +5608,7 @@ exports._initData = function () {
  *
  * @param {Object} newData
  */
-//* _setData is not called in this file, where get called?
+//* NOTE: _setData is not called in this file, where get called?
 
 
 exports._setData = function (newData) {
@@ -5809,12 +5812,29 @@ var Vue = __webpack_require__(/*! ./vue.js */ "./src/vue.js");
 var vm = new Vue({
   el: '#app',
   data: {
-    title: 'vue source code',
+    // title: 'vue source code',
+    title: 124,
     intro: 'current v0.11',
     word: 'Hello World!',
     flag: true,
     showEl: true,
-    list: [1, 2, 3, 4, 5, 6]
+    list: [1, 2, 3, 4, 5, 6],
+    firstName: 'Yang',
+    lastName: 'Jiang'
+  },
+  computed: {
+    fullName: {
+      // the getter should return the desired value
+      get: function get() {
+        return this.firstName + ' ' + this.lastName;
+      } // the setter is optional
+      // set: function (newValue) {
+      //     var names = newValue.split(' ');
+      //     this.firstName = names[0];
+      //     this.lastName = names[names.length - 1];
+      // },
+
+    }
   },
   methods: {
     changeWord: function changeWord() {
@@ -5828,12 +5848,17 @@ var vm = new Vue({
     },
     addElement: function addElement() {
       this.list.push(10);
+    },
+    changeFirstName: function changeFirstName() {
+      this.firstName = 'Dan';
+    },
+    changeLastName: function changeLastName() {
+      this.lastName = 'Gao';
     }
   }
 }); // setTimeout(() => {
-//     vm.word = 'fuck';
-//     vm.msg = 'cao!';
-//     console.log(vm);
+//     vm.firstName = 'Dan';
+//     vm.lastName = 'Gao!';
 // }, 2000);
 
 /***/ }),
@@ -6452,6 +6477,7 @@ function pushFilter() {
 
 
 exports.parse = function (s) {
+  //* NOTE: cache the value
   var hit = cache.get(s);
 
   if (hit) {
@@ -6476,14 +6502,14 @@ exports.parse = function (s) {
     } else if (inDouble) {
       // check double quote
       if (c === 0x22) inDouble = !inDouble;
-    } else if (c === 0x2C && // comma
+    } else if (c === 0x2c && // comma
     !paren && !curly && !square) {
       // reached the end of a directive
       pushDir(); // reset & skip the comma
 
       dir = {};
       begin = argIndex = lastFilterIndex = i + 1;
-    } else if (c === 0x3A && // colon
+    } else if (c === 0x3a && // colon
     !dir.expression && !dir.arg) {
       // argument
       arg = str.slice(begin, i).trim(); // test for valid argument here
@@ -6494,8 +6520,8 @@ exports.parse = function (s) {
         argIndex = i + 1;
         dir.arg = _.stripQuotes(arg) || arg;
       }
-    } else if (c === 0x7C && // pipe
-    str.charCodeAt(i + 1) !== 0x7C && str.charCodeAt(i - 1) !== 0x7C) {
+    } else if (c === 0x7c && // pipe
+    str.charCodeAt(i + 1) !== 0x7c && str.charCodeAt(i - 1) !== 0x7c) {
       if (dir.expression === undefined) {
         // first filter, end of expression
         lastFilterIndex = i + 1;
@@ -6526,22 +6552,22 @@ exports.parse = function (s) {
           break;
         // )
 
-        case 0x5B:
+        case 0x5b:
           square++;
           break;
         // [
 
-        case 0x5D:
+        case 0x5d:
           square--;
           break;
         // ]
 
-        case 0x7B:
+        case 0x7b:
           curly++;
           break;
         // {
 
-        case 0x7D:
+        case 0x7d:
           curly--;
           break;
         // }
@@ -19114,7 +19140,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "e0a6aa495a126f8a751e"
+/******/ 		__webpack_require__.h = () => "cb606b71f48953e7d541"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

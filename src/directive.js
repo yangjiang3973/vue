@@ -103,7 +103,7 @@ p._bind = function (def) {
         if (this._initValue != null) {
             watcher.set(this._initValue);
         } else if (this.update) {
-            this.update(watcher.value);
+            this.update(watcher.value); //* NOTE: watcher.value will apply filters
         }
     }
     this._bound = true;

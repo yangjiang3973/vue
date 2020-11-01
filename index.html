@@ -10,8 +10,12 @@
     </head>
     <body>
         <div id="app">
-            <div>{{ title }}  -- {{ intro }}</div>
-            <div v-if='flag'>
+            <!-- <h1>{{ title | capitalize }}</h1> -->
+            <h2>Author: {{ fullName }}</h2>
+            <button v-on='click: changeFirstName'>changeFirstName</button>
+            <button v-on='click: changeLastName'>changeLastName</button>
+            <!-- <div>{{ title | uppercase }}  -- {{ intro }}</div> -->
+            <!-- <div v-if='flag'>
                 <p v-text="word"></p>
                 <input type="text" v-model="word">
                 <button v-on='click: changeWord'>click to change</button>
@@ -25,6 +29,7 @@
                 <p>v-repeat is too complicated, so implement it later</p>
                 <p>right now work on v-show</p>
             </div>
+            <button v-on='click: changeShow'>hide show</button> -->
         </div>
     </body>
 </html>

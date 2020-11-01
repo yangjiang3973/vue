@@ -43,7 +43,7 @@ exports._initData = function () {
  *
  * @param {Object} newData
  */
-//* _setData is not called in this file, where get called?
+//* NOTE: _setData is not called in this file, where get called?
 exports._setData = function (newData) {
     newData = newData || {};
     var oldData = this._data;
