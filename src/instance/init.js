@@ -65,6 +65,8 @@ exports._init = function (options) {
     this._reused = false;
 
     // merge options.
+
+    //* NOTE: here native options and passed options merged...why make things so complex?
     options = this.$options = mergeOptions(
         this.constructor.options,
         options,

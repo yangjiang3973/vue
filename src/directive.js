@@ -57,7 +57,7 @@ p._bind = function (def) {
     if (typeof def === 'function') {
         this.update = def;
     } else {
-        _.extend(this, def); //* def has update and bind, add to this(i.e. this.bind, this.update)
+        _.extend(this, def); //* def has update and bind and other props, add to this(i.e. this.bind, this.update)
     }
     this._watcherExp = this.expression;
     this._checkDynamicLiteral();

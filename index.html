@@ -7,20 +7,34 @@
         <title>real vue</title>
         <!-- <link rel="stylesheet" href="style.css" /> -->
         <!-- <link rel="shortcut icon" href="/static/favicon.png" type="image/png" /> -->
+        <style>
+            .flag {
+                transition: all .5s ease;
+                height: 300px;
+                padding: 10px;
+                background-color: #eee;
+                overflow: hidden;
+            }
+            .flag.expand-enter, .flag.expand-leave {
+                height: 0;
+                padding: 0 10px;
+                opacity: 0;
+            }
+        </style>
     </head>
     <body>
         <div id="app">
-            <!-- <h1>{{ title | capitalize }}</h1> -->
+            <!-- <h1>{{ title | capitalize }}</h1>
             <h2>Author: {{ fullName }}</h2>
             <button v-on='click: changeFirstName'>changeFirstName</button>
             <button v-on='click: changeLastName'>changeLastName</button>
-            <!-- <div>{{ title | uppercase }}  -- {{ intro }}</div> -->
-            <!-- <div v-if='flag'>
+            <div>{{ title | uppercase }}  -- {{ intro }}</div> -->
+            <!-- <div id='test' v-if='flag' class="flag" v-transition="expand">
                 <p v-text="word"></p>
                 <input type="text" v-model="word">
                 <button v-on='click: changeWord'>click to change</button>
-            </div>
-            <button v-on='click: changeFlag'>click to hide</button>
+            </div> -->
+            <!-- <button v-on='click: changeFlag'>click to hide</button>
             <ul>
                 <li v-repeat='element: list'>{{ element }}</li>
             </ul>
@@ -29,7 +43,12 @@
                 <p>v-repeat is too complicated, so implement it later</p>
                 <p>right now work on v-show</p>
             </div>
-            <button v-on='click: changeShow'>hide show</button> -->
+            <button v-on='click: changeShow'>hide show</button>
+            <div v-demo="LightSlateGray : msg"></div> -->
+            <div v-component="my-component">
+                <button>test</button>
+            </div>
+            <my-component>kkkkk</my-component>
         </div>
     </body>
 </html>

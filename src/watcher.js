@@ -71,11 +71,11 @@ p.addDep = function (dep) {
  */
 
 p.get = function () {
-    this.beforeGet();
+    this.beforeGet(); //* NOTE: Observer.target = this;
     var vm = this.vm;
     var value;
     try {
-        value = this.getter.call(vm, vm);
+        value = this.getter.call(vm, vm); //* NOTE: need to understand this line
     } catch (e) {
         if (config.warnExpressionErrors) {
             _.warn(
@@ -92,7 +92,7 @@ p.get = function () {
         traverse(value);
     }
     value = _.applyFilters(value, this.readFilters, vm);
-    this.afterGet();
+    this.afterGet(); //* NOTE: Observer.target = null;
     return value;
 };
 

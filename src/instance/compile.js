@@ -28,7 +28,7 @@ exports._compile = function (el) {
         // transclude can potentially replace original
         // so we need to keep reference
         var original = el;
-        el = transclude(el, options);
+        el = transclude(el, options); //* NOTE: here convert template to el's children
         this._initElement(el);
         // compile and link the rest
         //* NOTE: main logic is in this file

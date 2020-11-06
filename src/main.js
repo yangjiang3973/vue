@@ -1,5 +1,37 @@
 const Vue = require('./vue.js');
 
+Vue.directive('demo', {
+    bind: function () {
+        this.el.style.color = '#fff';
+        this.el.style.backgroundColor = this.arg;
+    },
+    update: function (value) {
+        this.el.innerHTML =
+            'name - ' +
+            this.name +
+            '<br>' +
+            'raw - ' +
+            this.raw +
+            '<br>' +
+            'expression - ' +
+            this.expression +
+            '<br>' +
+            'argument - ' +
+            this.arg +
+            '<br>' +
+            'value - ' +
+            value;
+    },
+});
+
+let MyComponent = Vue.extend({
+    template: `
+    <p>A custom component!</p>
+    `,
+});
+
+Vue.component('my-component', MyComponent);
+
 let vm = new Vue({
     el: '#app',
     data: {
@@ -12,6 +44,7 @@ let vm = new Vue({
         list: [1, 2, 3, 4, 5, 6],
         firstName: 'Yang',
         lastName: 'Jiang',
+        msg: 'hello!',
     },
     computed: {
         fullName: {
@@ -53,3 +86,13 @@ let vm = new Vue({
 //     vm.firstName = 'Dan';
 //     vm.lastName = 'Gao!';
 // }, 2000);
+
+// console.log(Vue.options);
+
+// let vm = new Vue({
+//     el: '#app',
+//     template: `<div>
+//                     <span>template</span>
+//                     <input/>
+//                 </div>`,
+// });

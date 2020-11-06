@@ -930,6 +930,11 @@ exports.extend = function (extendOptions) {
   extendOptions = extendOptions || {};
   var Super = this;
   var Sub = createClass(extendOptions.name || Super.options.name || 'VueComponent');
+  /* Sub = function xxx(options){
+      this._init(options)
+  }
+  } */
+
   Sub.prototype = Object.create(Super.prototype);
   Sub.prototype.constructor = Sub;
   Sub.cid = cid++;
@@ -953,7 +958,8 @@ exports.extend = function (extendOptions) {
 
 
 function createClass(name) {
-  return new Function('return function ' + _.classify(name) + ' (options) { this._init(options) }')();
+  return new Function('return function ' + _.classify(name) + ' (options) { this._init(options) }' //* NOTE: consider ad eval, will run the string and return a def of func(call _init)
+  )();
 }
 /**
  * Plugin system
@@ -983,7 +989,7 @@ exports.use = function (plugin) {
  */
 
 
-var assetTypes = ['directive', 'filter', 'partial', 'transition'];
+var assetTypes = ['directive', 'filter', 'partial', 'transition']; //* NOTE: what is this function?
 
 function createAssetRegisters(Constructor) {
   /* Asset registration methods share the same signature:
@@ -996,7 +1002,7 @@ function createAssetRegisters(Constructor) {
       if (!definition) {
         return this.options[type + 's'][id];
       } else {
-        this.options[type + 's'][id] = definition;
+        this.options[type + 's'][id] = definition; //* NOTE: add custom directive to options.directives
       }
     };
   });
@@ -1012,6 +1018,8 @@ function createAssetRegisters(Constructor) {
     if (!definition) {
       return this.options.components[id];
     } else {
+      //* shorthand: use Vue.component() directly without extend()
+      //* need to call extend to convert
       if (_.isPlainObject(definition)) {
         definition.name = id;
         definition = _.Vue.extend(definition);
@@ -1022,7 +1030,7 @@ function createAssetRegisters(Constructor) {
   };
 }
 
-createAssetRegisters(exports);
+createAssetRegisters(exports); //* when this file is required, this func will run first
 
 /***/ }),
 
@@ -2422,7 +2430,6 @@ Object.defineProperty(module.exports, "delimiters", ({
   \**************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 237:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -2488,7 +2495,7 @@ p._bind = function (def) {
   if (typeof def === 'function') {
     this.update = def;
   } else {
-    _.extend(this, def); //* def has update and bind, add to this(i.e. this.bind, this.update)
+    _.extend(this, def); //* def has update and bind and other props, add to this(i.e. this.bind, this.update)
 
   }
 
@@ -2807,7 +2814,8 @@ module.exports = {
 
       if (!this._isDynamicLiteral) {
         this.resolveCtor(this.expression);
-        var child = this.build();
+        var child = this.build(); //* instantiate Sub
+
         child.$before(this.ref);
         this.setCurrent(child);
       } else {
@@ -3174,10 +3182,11 @@ module.exports = {
   // NOTE: this function is shared in v-partial
   compile: function compile(frag) {
     var vm = this.vm; // the linker is not guaranteed to be present because
-    // this function might get called by v-partial 
+    // this function might get called by v-partial
 
     this.unlink = this.linker ? this.linker(vm, frag) : vm.$compile(frag);
-    transition.blockAppend(frag, this.end, vm); // call attached for all the child components created
+    transition.blockAppend(frag, this.end, vm); //* NOTE: transition
+    // call attached for all the child components created
     // during the compilation
 
     if (_.inDoc(vm.$el)) {
@@ -4732,6 +4741,7 @@ module.exports = {
   priority: 1000,
   isLiteral: true,
   bind: function bind() {
+    //* NOTE: what is `_isDynamicLiteral`
     if (!this._isDynamicLiteral) {
       this.update(this.expression);
     }
@@ -5119,7 +5129,7 @@ exports._compile = function (el) {
     // transclude can potentially replace original
     // so we need to keep reference
     var original = el;
-    el = transclude(el, options);
+    el = transclude(el, options); //* NOTE: here convert template to el's children
 
     this._initElement(el); // compile and link the rest
     //* NOTE: main logic is in this file
@@ -5515,6 +5525,7 @@ exports._init = function (options) {
 
   this._new = true;
   this._reused = false; // merge options.
+  //* NOTE: here native options and passed options merged...why make things so complex?
 
   options = this.$options = mergeOptions(this.constructor.options, options, this); // set data after merge.
 
@@ -5809,6 +5820,19 @@ exports._defineMeta = function (key, value) {
 
 var Vue = __webpack_require__(/*! ./vue.js */ "./src/vue.js");
 
+Vue.directive('demo', {
+  bind: function bind() {
+    this.el.style.color = '#fff';
+    this.el.style.backgroundColor = this.arg;
+  },
+  update: function update(value) {
+    this.el.innerHTML = 'name - ' + this.name + '<br>' + 'raw - ' + this.raw + '<br>' + 'expression - ' + this.expression + '<br>' + 'argument - ' + this.arg + '<br>' + 'value - ' + value;
+  }
+});
+var MyComponent = Vue.extend({
+  template: "\n    <p>A custom component!</p>\n    "
+});
+Vue.component('my-component', MyComponent);
 var vm = new Vue({
   el: '#app',
   data: {
@@ -5820,7 +5844,8 @@ var vm = new Vue({
     showEl: true,
     list: [1, 2, 3, 4, 5, 6],
     firstName: 'Yang',
-    lastName: 'Jiang'
+    lastName: 'Jiang',
+    msg: 'hello!'
   },
   computed: {
     fullName: {
@@ -5860,6 +5885,14 @@ var vm = new Vue({
 //     vm.firstName = 'Dan';
 //     vm.lastName = 'Gao!';
 // }, 2000);
+// console.log(Vue.options);
+// let vm = new Vue({
+//     el: '#app',
+//     template: `<div>
+//                     <span>template</span>
+//                     <input/>
+//                 </div>`,
+// });
 
 /***/ }),
 
@@ -7913,7 +7946,7 @@ exports.blockRemove = function (start, end, vm) {
 
 
 var apply = exports.apply = function (el, direction, op, vm, cb) {
-  var transData = el.__v_trans;
+  var transData = el.__v_trans; //* where is __v_trans?
 
   if (!transData || !vm._isCompiled || // if the vm is being manipulated by a parent directive
   // during the parent's compilation phase, skip the
@@ -9221,12 +9254,13 @@ p.addDep = function (dep) {
 
 
 p.get = function () {
-  this.beforeGet();
+  this.beforeGet(); //* NOTE: Observer.target = this;
+
   var vm = this.vm;
   var value;
 
   try {
-    value = this.getter.call(vm, vm);
+    value = this.getter.call(vm, vm); //* NOTE: need to understand this line
   } catch (e) {
     if (config.warnExpressionErrors) {
       _.warn('Error when evaluating expression "' + this.expression + '":\n   ' + e);
@@ -9240,7 +9274,8 @@ p.get = function () {
   }
 
   value = _.applyFilters(value, this.readFilters, vm);
-  this.afterGet();
+  this.afterGet(); //* NOTE: Observer.target = null;
+
   return value;
 };
 /**
@@ -19140,7 +19175,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "cb606b71f48953e7d541"
+/******/ 		__webpack_require__.h = () => "9622f7e44570bed88b20"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
