@@ -6,9 +6,9 @@
  */
 
 exports.isReserved = function (str) {
-  var c = (str + '').charCodeAt(0)
-  return c === 0x24 || c === 0x5F
-}
+    var c = (str + '').charCodeAt(0);
+    return c === 0x24 || c === 0x5f;
+};
 
 /**
  * Guard text output, make sure undefined outputs
@@ -19,10 +19,8 @@ exports.isReserved = function (str) {
  */
 
 exports.toString = function (value) {
-  return value == null
-    ? ''
-    : value.toString()
-}
+    return value == null ? '' : value.toString();
+};
 
 /**
  * Check and convert possible numeric numbers before
@@ -33,13 +31,10 @@ exports.toString = function (value) {
  */
 
 exports.toNumber = function (value) {
-  return (
-    isNaN(value) ||
-    value === null ||
-    typeof value === 'boolean'
-  ) ? value
-    : Number(value)
-}
+    return isNaN(value) || value === null || typeof value === 'boolean'
+        ? value
+        : Number(value);
+};
 
 /**
  * Strip quotes from a string
@@ -49,12 +44,10 @@ exports.toNumber = function (value) {
  */
 
 exports.stripQuotes = function (str) {
-  var a = str.charCodeAt(0)
-  var b = str.charCodeAt(str.length - 1)
-  return a === b && (a === 0x22 || a === 0x27)
-    ? str.slice(1, -1)
-    : false
-}
+    var a = str.charCodeAt(0);
+    var b = str.charCodeAt(str.length - 1);
+    return a === b && (a === 0x22 || a === 0x27) ? str.slice(1, -1) : false;
+};
 
 /**
  * Replace helper
@@ -63,8 +56,8 @@ exports.stripQuotes = function (str) {
  * @param {String} c - matched char
  * @return {String}
  */
-function toUpper (_, c) {
-  return c ? c.toUpperCase () : ''
+function toUpper(_, c) {
+    return c ? c.toUpperCase() : '';
 }
 
 /**
@@ -74,10 +67,10 @@ function toUpper (_, c) {
  * @return {String}
  */
 
-var camelRE = /-(\w)/g
+var camelRE = /-(\w)/g;
 exports.camelize = function (str) {
-  return str.replace(camelRE, toUpper)
-}
+    return str.replace(camelRE, toUpper);
+};
 
 /**
  * Converts hyphen/underscore/slash delimitered names into
@@ -91,10 +84,10 @@ exports.camelize = function (str) {
  * @return {String}
  */
 
-var classifyRE = /(?:^|[-_\/])(\w)/g
+var classifyRE = /(?:^|[-_\/])(\w)/g;
 exports.classify = function (str) {
-  return str.replace(classifyRE, toUpper)
-}
+    return str.replace(classifyRE, toUpper);
+};
 
 /**
  * Simple bind, faster than native
@@ -105,10 +98,10 @@ exports.classify = function (str) {
  */
 
 exports.bind = function (fn, ctx) {
-  return function () {
-    return fn.apply(ctx, arguments)
-  }
-}
+    return function () {
+        return fn.apply(ctx, arguments);
+    };
+};
 
 /**
  * Convert an Array-like object to a real Array.
@@ -119,14 +112,14 @@ exports.bind = function (fn, ctx) {
  */
 
 exports.toArray = function (list, start) {
-  start = start || 0
-  var i = list.length - start
-  var ret = new Array(i)
-  while (i--) {
-    ret[i] = list[i + start]
-  }
-  return ret
-}
+    start = start || 0;
+    var i = list.length - start;
+    var ret = new Array(i);
+    while (i--) {
+        ret[i] = list[i + start];
+    }
+    return ret;
+};
 
 /**
  * Mix properties into target object.
@@ -136,11 +129,11 @@ exports.toArray = function (list, start) {
  */
 
 exports.extend = function (to, from) {
-  for (var key in from) {
-    to[key] = from[key]
-  }
-  return to
-}
+    for (var key in from) {
+        to[key] = from[key];
+    }
+    return to;
+};
 
 /**
  * Quick object check - this is primarily used to tell
@@ -152,8 +145,8 @@ exports.extend = function (to, from) {
  */
 
 exports.isObject = function (obj) {
-  return obj && typeof obj === 'object'
-}
+    return obj && typeof obj === 'object';
+};
 
 /**
  * Strict object type check. Only returns true
@@ -163,10 +156,10 @@ exports.isObject = function (obj) {
  * @return {Boolean}
  */
 
-var toString = Object.prototype.toString
+var toString = Object.prototype.toString;
 exports.isPlainObject = function (obj) {
-  return toString.call(obj) === '[object Object]'
-}
+    return toString.call(obj) === '[object Object]';
+};
 
 /**
  * Array type check.
@@ -176,8 +169,8 @@ exports.isPlainObject = function (obj) {
  */
 
 exports.isArray = function (obj) {
-  return Array.isArray(obj)
-}
+    return Array.isArray(obj);
+};
 
 /**
  * Define a non-enumerable property
@@ -188,14 +181,16 @@ exports.isArray = function (obj) {
  * @param {Boolean} [enumerable]
  */
 
+//* NOTE: why not just obj.key = val...is enumerable=false necessary?
+//* `By default, values added using Object.defineProperty() are immutable and not enumerable.` -- by MDN
 exports.define = function (obj, key, val, enumerable) {
-  Object.defineProperty(obj, key, {
-    value        : val,
-    enumerable   : !!enumerable,
-    writable     : true,
-    configurable : true
-  })
-}
+    Object.defineProperty(obj, key, {
+        value: val,
+        enumerable: !!enumerable,
+        writable: true,
+        configurable: true,
+    });
+};
 
 /**
  * Debounce a function so it only gets called after the
@@ -206,25 +201,25 @@ exports.define = function (obj, key, val, enumerable) {
  * @return {Function} - the debounced function
  */
 
-exports.debounce = function(func, wait) {
-  var timeout, args, context, timestamp, result
-  var later = function() {
-    var last = Date.now() - timestamp
-    if (last < wait && last >= 0) {
-      timeout = setTimeout(later, wait - last)
-    } else {
-      timeout = null
-      result = func.apply(context, args)
-      if (!timeout) context = args = null
-    }
-  }
-  return function() {
-    context = this
-    args = arguments
-    timestamp = Date.now()
-    if (!timeout) {
-      timeout = setTimeout(later, wait)
-    }
-    return result
-  }
-}
+exports.debounce = function (func, wait) {
+    var timeout, args, context, timestamp, result;
+    var later = function () {
+        var last = Date.now() - timestamp;
+        if (last < wait && last >= 0) {
+            timeout = setTimeout(later, wait - last);
+        } else {
+            timeout = null;
+            result = func.apply(context, args);
+            if (!timeout) context = args = null;
+        }
+    };
+    return function () {
+        context = this;
+        args = arguments;
+        timestamp = Date.now();
+        if (!timeout) {
+            timeout = setTimeout(later, wait);
+        }
+        return result;
+    };
+};

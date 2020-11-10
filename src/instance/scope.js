@@ -111,13 +111,13 @@ exports._unproxy = function (key) {
 /**
  * Force update on every watcher in scope.
  */
-//* used in _setData
+//* used in _setData and $add, in $add this is a root level change, so need to update all watchers
 exports._digest = function () {
     var i = this._watcherList.length;
     while (i--) {
         this._watcherList[i].update();
     }
-    var children = this._children;
+    var children = this._children; //* NOTE: what is _children? component?
     i = children.length;
     while (i--) {
         var child = children[i];

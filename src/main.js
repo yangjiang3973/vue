@@ -45,19 +45,21 @@ let vm = new Vue({
         firstName: 'Yang',
         lastName: 'Jiang',
         msg: 'hello!',
+        observeData: {
+            a: '1',
+            b: '2',
+        },
+        simpleArr: [1, 2, 3, 4, 5],
+        nestedArr: [1, [2, 3, 4], 5],
+        objArr: [{ a: 1 }, { b: 2 }, { c: 3 }],
     },
+    // data: [1, 2, 3],  // data cannot be array, will show Vue warning
     computed: {
         fullName: {
             // the getter should return the desired value
             get: function () {
                 return this.firstName + ' ' + this.lastName;
             },
-            // the setter is optional
-            // set: function (newValue) {
-            //     var names = newValue.split(' ');
-            //     this.firstName = names[0];
-            //     this.lastName = names[names.length - 1];
-            // },
         },
     },
     methods: {
@@ -78,6 +80,35 @@ let vm = new Vue({
         },
         changeLastName: function () {
             this.lastName = 'Gao';
+        },
+        addData: function () {
+            // this.observeData.temp = true;
+            this.$add('temp', true); // this means each obj's key will inherit methods from vm?
+            this.$add('c', 'this is c');
+            console.log('this.data', this.$data);
+        },
+        deleteData: function () {
+            this.$delete('c');
+            console.log('this.data', this.$data);
+        },
+        changeTemp: function () {
+            this.observeData.temp = !this.observeData.temp;
+        },
+        changeSimpleArr: function () {
+            this.simpleArr[0] = 100; // no
+            // this.simpleArr.$set('0', 100); // yes(DONE)
+            // this.simpleArr.push(100); // yes(DONE)
+            console.log(this.simpleArr);
+        },
+        changeNestedArr: function () {
+            this.nestedArr[1].push(100); // no
+            // this.nestedArr.push(100); // yes, because this is like simpleArr
+            console.log('this.nestedArr', this.nestedArr);
+        },
+        changeObjArr: function () {
+            // this.objArr.push(100); // yes, because this is like simpleArr
+            // this.objArr[0].a = 100; // yes, it will continue observe obj in arr
+            console.log('this.objArr', this.objArr);
         },
     },
 });

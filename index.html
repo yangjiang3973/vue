@@ -28,13 +28,13 @@
             <h2>Author: {{ fullName }}</h2>
             <button v-on='click: changeFirstName'>changeFirstName</button>
             <button v-on='click: changeLastName'>changeLastName</button>
-            <div>{{ title | uppercase }}  -- {{ intro }}</div> -->
-            <!-- <div id='test' v-if='flag' class="flag" v-transition="expand">
+            <div>{{ title | uppercase }}  -- {{ intro }}</div> 
+            <div id='test' v-if='flag' class="flag" v-transition="expand">
                 <p v-text="word"></p>
                 <input type="text" v-model="word">
                 <button v-on='click: changeWord'>click to change</button>
-            </div> -->
-            <!-- <button v-on='click: changeFlag'>click to hide</button>
+            </div>
+            <button v-on='click: changeFlag'>click to hide</button>
             <ul>
                 <li v-repeat='element: list'>{{ element }}</li>
             </ul>
@@ -44,11 +44,22 @@
                 <p>right now work on v-show</p>
             </div>
             <button v-on='click: changeShow'>hide show</button>
-            <div v-demo="LightSlateGray : msg"></div> -->
+            <div v-demo="LightSlateGray : msg"></div>
             <div v-component="my-component">
                 <button>test</button>
             </div>
             <my-component>kkkkk</my-component>
+            <div v-if='observeData.temp'>can you see me?</div> -->
+            <!-- <div>add: {{ c }}</div>
+            <button v-on='click: addData'>add</button>
+            <button v-on='click: deleteData'>delete</button>
+            <button v-on='click: changeTemp'>change</button> -->
+            <div>{{simpleArr}}</div>
+            <button v-on='click: changeSimpleArr'>change simpleArr</button>
+            <div>{{nestedArr[1]}}</div>
+            <button v-on='click: changeNestedArr'>change nestedArr</button>
+            <div>{{objArr[0].a}}</div>
+            <button v-on='click: changeObjArr'>change objArr</button>
         </div>
     </body>
 </html>

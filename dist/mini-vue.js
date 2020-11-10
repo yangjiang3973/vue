@@ -5696,7 +5696,7 @@ exports._unproxy = function (key) {
 /**
  * Force update on every watcher in scope.
  */
-//* used in _setData
+//* used in _setData and $add, in $add this is a root level change, so need to update all watchers
 
 
 exports._digest = function () {
@@ -5706,7 +5706,8 @@ exports._digest = function () {
     this._watcherList[i].update();
   }
 
-  var children = this._children;
+  var children = this._children; //* NOTE: what is _children? component?
+
   i = children.length;
 
   while (i--) {
@@ -5845,20 +5846,28 @@ var vm = new Vue({
     list: [1, 2, 3, 4, 5, 6],
     firstName: 'Yang',
     lastName: 'Jiang',
-    msg: 'hello!'
+    msg: 'hello!',
+    observeData: {
+      a: '1',
+      b: '2'
+    },
+    simpleArr: [1, 2, 3, 4, 5],
+    nestedArr: [1, [2, 3, 4], 5],
+    objArr: [{
+      a: 1
+    }, {
+      b: 2
+    }, {
+      c: 3
+    }]
   },
+  // data: [1, 2, 3],  // data cannot be array, will show Vue warning
   computed: {
     fullName: {
       // the getter should return the desired value
       get: function get() {
         return this.firstName + ' ' + this.lastName;
-      } // the setter is optional
-      // set: function (newValue) {
-      //     var names = newValue.split(' ');
-      //     this.firstName = names[0];
-      //     this.lastName = names[names.length - 1];
-      // },
-
+      }
     }
   },
   methods: {
@@ -5879,6 +5888,38 @@ var vm = new Vue({
     },
     changeLastName: function changeLastName() {
       this.lastName = 'Gao';
+    },
+    addData: function addData() {
+      // this.observeData.temp = true;
+      this.$add('temp', true); // this means each obj's key will inherit methods from vm?
+
+      this.$add('c', 'this is c');
+      console.log('this.data', this.$data);
+    },
+    deleteData: function deleteData() {
+      this.$delete('c');
+      console.log('this.data', this.$data);
+    },
+    changeTemp: function changeTemp() {
+      this.observeData.temp = !this.observeData.temp;
+    },
+    changeSimpleArr: function changeSimpleArr() {
+      this.simpleArr[0] = 100; // no
+      // this.simpleArr.$set('0', 100); // yes(DONE)
+      // this.simpleArr.push(100); // yes(DONE)
+
+      console.log(this.simpleArr);
+    },
+    changeNestedArr: function changeNestedArr() {
+      this.nestedArr[1].push(100); // no
+      // this.nestedArr.push(100); // yes, because this is like simpleArr
+
+      console.log('this.nestedArr', this.nestedArr);
+    },
+    changeObjArr: function changeObjArr() {
+      // this.objArr.push(100); // yes, because this is like simpleArr
+      // this.objArr[0].a = 100; // yes, it will continue observe obj in arr
+      console.log('this.objArr', this.objArr);
     }
   }
 }); // setTimeout(() => {
@@ -5902,16 +5943,17 @@ var vm = new Vue({
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 81:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
 
 var arrayProto = Array.prototype;
-var arrayMethods = Object.create(arrayProto)
+var arrayMethods = Object.create(arrayProto);
 /**
  * Intercept mutating methods and emit events
  */
-;
+
 ['push', 'pop', 'shift', 'unshift', 'splice', 'sort', 'reverse'].forEach(function (method) {
   // cache original method
   var original = arrayProto[method];
@@ -6344,14 +6386,15 @@ var objProto = Object.prototype; //* NOTE: included in observer/index.js, so all
 
 _.define(objProto, '$add', function $add(key, val) {
   if (this.hasOwnProperty(key)) return;
-  var ob = this.__ob__;
+  var ob = this.__ob__; //* if it is not observed or key is reserved
+  //* I feel it is not necessary now
 
   if (!ob || _.isReserved(key)) {
     this[key] = val;
     return;
   }
 
-  ob.convert(key, val);
+  ob.convert(key, val); //* what is vms? used to proxy the new data entry if it is added at root level of data
 
   if (ob.vms) {
     var i = ob.vms.length;
@@ -6393,7 +6436,8 @@ _.define(objProto, '$set', function $set(key, val) {
 _.define(objProto, '$delete', function $delete(key) {
   if (!this.hasOwnProperty(key)) return;
   delete this[key];
-  var ob = this.__ob__;
+  var ob = this.__ob__; //* if it is not observed or key is reserved
+  //* I feel it is not necessary now
 
   if (!ob || _.isReserved(key)) {
     return;
@@ -8595,7 +8639,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  */
 exports.isReserved = function (str) {
   var c = (str + '').charCodeAt(0);
-  return c === 0x24 || c === 0x5F;
+  return c === 0x24 || c === 0x5f;
 };
 /**
  * Guard text output, make sure undefined outputs
@@ -8772,6 +8816,8 @@ exports.isArray = function (obj) {
  * @param {*} val
  * @param {Boolean} [enumerable]
  */
+//* NOTE: why not just obj.key = val...is enumerable=false necessary?
+//* `By default, values added using Object.defineProperty() are immutable and not enumerable.` -- by MDN
 
 
 exports.define = function (obj, key, val, enumerable) {
@@ -9235,6 +9281,7 @@ var p = Watcher.prototype;
  *
  * @param {Dep} dep
  */
+//* NOTE: why have 2 queues? newDeps and desp??
 
 p.addDep = function (dep) {
   var id = dep.id;
@@ -19175,7 +19222,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "9622f7e44570bed88b20"
+/******/ 		__webpack_require__.h = () => "84060237ddd08a12a812"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

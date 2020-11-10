@@ -17,11 +17,14 @@ var objProto = Object.prototype;
 _.define(objProto, '$add', function $add(key, val) {
     if (this.hasOwnProperty(key)) return;
     var ob = this.__ob__;
+    //* if it is not observed or key is reserved
+    //* I feel it is not necessary now
     if (!ob || _.isReserved(key)) {
         this[key] = val;
         return;
     }
     ob.convert(key, val);
+    //* what is vms? used to proxy the new data entry if it is added at root level of data
     if (ob.vms) {
         var i = ob.vms.length;
         while (i--) {
@@ -60,6 +63,8 @@ _.define(objProto, '$delete', function $delete(key) {
     if (!this.hasOwnProperty(key)) return;
     delete this[key];
     var ob = this.__ob__;
+    //* if it is not observed or key is reserved
+    //* I feel it is not necessary now
     if (!ob || _.isReserved(key)) {
         return;
     }

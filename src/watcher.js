@@ -55,6 +55,7 @@ var p = Watcher.prototype;
  * @param {Dep} dep
  */
 
+//* NOTE: why have 2 queues? newDeps and desp??
 p.addDep = function (dep) {
     var id = dep.id;
     if (!this.newDeps[id]) {
