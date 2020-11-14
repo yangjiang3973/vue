@@ -31,7 +31,7 @@ function Watcher(vm, expression, cb, options) {
     options = options || {};
     this.deep = !!options.deep;
     this.user = !!options.user;
-    this.deps = Object.create(null);
+    this.deps = Object.create(null); //* NOTE: why not use {} to create an empty obj
     // setup filters if any.
     // We delegate directive filters here to the watcher
     // because they need to be included in the dependency
@@ -44,7 +44,7 @@ function Watcher(vm, expression, cb, options) {
     var res = expParser.parse(expression, options.twoWay); //* NOTE: need to read this part
     this.getter = res.get;
     this.setter = res.set;
-    this.value = this.get();
+    this.value = this.get(); //* NOTE: access to observer's get to register as sub
 }
 
 var p = Watcher.prototype;
@@ -148,6 +148,7 @@ p.afterGet = function () {
  * Will be called when a dependency changes.
  */
 
+//* Watcher's update just add watcher instance to batcher array
 p.update = function () {
     if (!config.async || config.debug) {
         this.run();

@@ -185,7 +185,6 @@ p.convert = function (key, val) {
             if (newVal === val) return;
             // remove dep from old value
             //* NOTE: still cannot understand here, about oldChildOb
-
             var oldChildOb = val && val.__ob__;
             if (oldChildOb) {
                 var oldDeps = oldChildOb.deps;

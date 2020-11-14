@@ -15,6 +15,7 @@ describe('Dep', function () {
     });
 
     //* NOTE: when to removeSub? need to understand and implement
+    //* Ans: when to destroy a watcher, need to remove itself from Dep as sub
     it('removeSub', function () {
         var sub = {};
         d.addSub(sub);

@@ -32,6 +32,8 @@ let MyComponent = Vue.extend({
 
 Vue.component('my-component', MyComponent);
 
+Vue.config.async = true;
+
 let vm = new Vue({
     el: '#app',
     data: {
@@ -109,6 +111,16 @@ let vm = new Vue({
             // this.objArr.push(100); // yes, because this is like simpleArr
             // this.objArr[0].a = 100; // yes, it will continue observe obj in arr
             console.log('this.objArr', this.objArr);
+        },
+
+        batchUpdate: function () {
+            let t = new Date();
+            for (let i = 0; i < 1e6; i++) {
+                if (i % 2 === 0) this.intro = '';
+                else this.intro = 'updated intro';
+            }
+            console.log(new Date() - t + 'ms');
+            console.log('done');
         },
     },
 });

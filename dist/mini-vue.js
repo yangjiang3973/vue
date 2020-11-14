@@ -1210,7 +1210,7 @@ function run(queue) {
 
 
 exports.push = function (job) {
-  var id = job.id;
+  var id = job.id; //* if already has this job(watcher), ignore
 
   if (!id || !has[id] || flushing) {
     if (!has[id]) {
@@ -1234,7 +1234,6 @@ exports.push = function (job) {
       return;
     }
 
-    ;
     (job.user ? userQueue : queue).push(job);
 
     if (!waiting) {
@@ -5834,6 +5833,7 @@ var MyComponent = Vue.extend({
   template: "\n    <p>A custom component!</p>\n    "
 });
 Vue.component('my-component', MyComponent);
+Vue.config.async = true;
 var vm = new Vue({
   el: '#app',
   data: {
@@ -5920,6 +5920,16 @@ var vm = new Vue({
       // this.objArr.push(100); // yes, because this is like simpleArr
       // this.objArr[0].a = 100; // yes, it will continue observe obj in arr
       console.log('this.objArr', this.objArr);
+    },
+    batchUpdate: function batchUpdate() {
+      var t = new Date();
+
+      for (var i = 0; i < 1e6; i++) {
+        if (i % 2 === 0) this.intro = '';else this.intro = 'updated intro';
+      }
+
+      console.log(new Date() - t + 'ms');
+      console.log('done');
     }
   }
 }); // setTimeout(() => {
@@ -5943,7 +5953,6 @@ var vm = new Vue({
   \*******************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
-/*! CommonJS bailout: module.exports is used directly at 81:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ../util */ "./src/util/index.js");
@@ -8437,7 +8446,11 @@ exports.nextTick = function () {
   var timerFunc;
 
   function handle() {
-    pending = false;
+    pending = false; // 之所以要slice复制一份出来是因为有的cb执行过程中又会往callbacks中加入内容
+    // 比如$nextTick的回调函数里又有$nextTick
+    // 这些是应该放入到下一个轮次的nextTick去执行的,
+    // 所以拷贝一份当前的,遍历执行完当前的即可,避免无休止的执行下去
+
     var copies = callbacks.slice(0);
     callbacks = [];
 
@@ -8450,11 +8463,12 @@ exports.nextTick = function () {
 
   if (typeof MutationObserver !== 'undefined') {
     var counter = 1;
-    var observer = new MutationObserver(handle);
+    var observer = new MutationObserver(handle); //* NOTE: why create a textNode here?
+
     var textNode = document.createTextNode(counter);
     observer.observe(textNode, {
       characterData: true
-    });
+    }); //* change the textNode content here, either 0/1
 
     timerFunc = function timerFunc() {
       counter = (counter + 1) % 2;
@@ -8471,7 +8485,7 @@ exports.nextTick = function () {
     callbacks.push(func);
     if (pending) return;
     pending = true;
-    timerFunc(handle, 0);
+    timerFunc(handle, 0); // pass arguments just in case of using setTimeout instead of MutationObserver
   };
 }();
 /**
@@ -9215,6 +9229,7 @@ module.exports = _.Vue = Vue;
   \************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 280:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var _ = __webpack_require__(/*! ./util */ "./src/util/index.js");
@@ -9272,7 +9287,7 @@ function Watcher(vm, expression, cb, options) {
 
   this.getter = res.get;
   this.setter = res.set;
-  this.value = this.get();
+  this.value = this.get(); //* NOTE: access to observer's get to register as sub
 }
 
 var p = Watcher.prototype;
@@ -9373,6 +9388,7 @@ p.afterGet = function () {
  * Subscriber interface.
  * Will be called when a dependency changes.
  */
+//* Watcher's update just add watcher instance to batcher array
 
 
 p.update = function () {
@@ -19222,7 +19238,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "84060237ddd08a12a812"
+/******/ 		__webpack_require__.h = () => "5cdc8d719f3793ae2ca0"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */
