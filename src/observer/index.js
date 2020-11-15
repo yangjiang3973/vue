@@ -1,14 +1,8 @@
-import Dep from './dep'
-import { arrayMethods } from './array'
-import {
-  def,
-  isArray,
-  isPlainObject,
-  hasProto,
-  hasOwn
-} from '../util/index'
+import Dep from "./dep";
+import { arrayMethods } from "./array";
+import { def, isArray, isPlainObject, hasProto, hasOwn } from "../util/index";
 
-const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
+const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 
 /**
  * By default, when a reactive property is set, the new value is
@@ -20,11 +14,11 @@ const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
  * conversion on the new value, we wrap that call inside this function.
  */
 
-let shouldConvert = true
-export function withoutConversion (fn) {
-  shouldConvert = false
-  fn()
-  shouldConvert = true
+let shouldConvert = true;
+export function withoutConversion(fn) {
+  shouldConvert = false;
+  fn();
+  shouldConvert = true;
 }
 
 /**
@@ -37,18 +31,19 @@ export function withoutConversion (fn) {
  * @constructor
  */
 
-export function Observer (value) {
-  this.value = value
-  this.dep = new Dep()
-  def(value, '__ob__', this)
+export function Observer(value) {
+  this.value = value;
+  this.dep = new Dep();
+  def(value, "__ob__", this);
+  //* NOTE: obviously, the different strategy for Array and Obj,
+  //* the do not share an observe function to observe changes.
+  //* maybe this is why my array is under observed better than Vue(change by index I mean)
   if (isArray(value)) {
-    var augment = hasProto
-      ? protoAugment
-      : copyAugment
-    augment(value, arrayMethods, arrayKeys)
-    this.observeArray(value)
+    var augment = hasProto ? protoAugment : copyAugment;
+    augment(value, arrayMethods, arrayKeys);
+    this.observeArray(value);
   } else {
-    this.walk(value)
+    this.walk(value);
   }
 }
 
@@ -63,11 +58,11 @@ export function Observer (value) {
  */
 
 Observer.prototype.walk = function (obj) {
-  var keys = Object.keys(obj)
+  var keys = Object.keys(obj);
   for (var i = 0, l = keys.length; i < l; i++) {
-    this.convert(keys[i], obj[keys[i]])
+    this.convert(keys[i], obj[keys[i]]);
   }
-}
+};
 
 /**
  * Observe a list of Array items.
@@ -77,9 +72,9 @@ Observer.prototype.walk = function (obj) {
 
 Observer.prototype.observeArray = function (items) {
   for (var i = 0, l = items.length; i < l; i++) {
-    observe(items[i])
+    observe(items[i]);
   }
-}
+};
 
 /**
  * Convert a property into getter/setter so we can emit
@@ -90,8 +85,8 @@ Observer.prototype.observeArray = function (items) {
  */
 
 Observer.prototype.convert = function (key, val) {
-  defineReactive(this.value, key, val)
-}
+  defineReactive(this.value, key, val);
+};
 
 /**
  * Add an owner vm, so that when $set/$delete mutations
@@ -103,8 +98,8 @@ Observer.prototype.convert = function (key, val) {
  */
 
 Observer.prototype.addVm = function (vm) {
-  (this.vms || (this.vms = [])).push(vm)
-}
+  (this.vms || (this.vms = [])).push(vm);
+};
 
 /**
  * Remove an owner vm. This is called when the object is
@@ -114,8 +109,8 @@ Observer.prototype.addVm = function (vm) {
  */
 
 Observer.prototype.removeVm = function (vm) {
-  this.vms.$remove(vm)
-}
+  this.vms.$remove(vm);
+};
 
 // helpers
 
@@ -127,9 +122,9 @@ Observer.prototype.removeVm = function (vm) {
  * @param {Object} src
  */
 
-function protoAugment (target, src) {
+function protoAugment(target, src) {
   /* eslint-disable no-proto */
-  target.__proto__ = src
+  target.__proto__ = src;
   /* eslint-enable no-proto */
 }
 
@@ -141,10 +136,10 @@ function protoAugment (target, src) {
  * @param {Object} proto
  */
 
-function copyAugment (target, src, keys) {
+function copyAugment(target, src, keys) {
   for (var i = 0, l = keys.length; i < l; i++) {
-    var key = keys[i]
-    def(target, key, src[key])
+    var key = keys[i];
+    def(target, key, src[key]);
   }
 }
 
@@ -159,28 +154,25 @@ function copyAugment (target, src, keys) {
  * @static
  */
 
-export function observe (value, vm) {
-  if (!value || typeof value !== 'object') {
-    return
+export function observe(value, vm) {
+  if (!value || typeof value !== "object") {
+    return;
   }
-  var ob
-  if (
-    hasOwn(value, '__ob__') &&
-    value.__ob__ instanceof Observer
-  ) {
-    ob = value.__ob__
+  var ob;
+  if (hasOwn(value, "__ob__") && value.__ob__ instanceof Observer) {
+    ob = value.__ob__;
   } else if (
     shouldConvert &&
     (isArray(value) || isPlainObject(value)) &&
     Object.isExtensible(value) &&
     !value._isVue
   ) {
-    ob = new Observer(value)
+    ob = new Observer(value);
   }
   if (ob && vm) {
-    ob.addVm(vm)
+    ob.addVm(vm);
   }
-  return ob
+  return ob;
 }
 
 /**
@@ -191,50 +183,50 @@ export function observe (value, vm) {
  * @param {*} val
  */
 
-export function defineReactive (obj, key, val) {
-  var dep = new Dep()
+export function defineReactive(obj, key, val) {
+  var dep = new Dep();
 
-  var property = Object.getOwnPropertyDescriptor(obj, key)
+  var property = Object.getOwnPropertyDescriptor(obj, key);
   if (property && property.configurable === false) {
-    return
+    return;
   }
 
   // cater for pre-defined getter/setters
-  var getter = property && property.get
-  var setter = property && property.set
+  var getter = property && property.get;
+  var setter = property && property.set;
 
-  var childOb = observe(val)
+  var childOb = observe(val);
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
-    get: function reactiveGetter () {
-      var value = getter ? getter.call(obj) : val
+    get: function reactiveGetter() {
+      var value = getter ? getter.call(obj) : val;
       if (Dep.target) {
-        dep.depend()
+        dep.depend();
         if (childOb) {
-          childOb.dep.depend()
+          childOb.dep.depend();
         }
         if (isArray(value)) {
           for (var e, i = 0, l = value.length; i < l; i++) {
-            e = value[i]
-            e && e.__ob__ && e.__ob__.dep.depend()
+            e = value[i];
+            e && e.__ob__ && e.__ob__.dep.depend();
           }
         }
       }
-      return value
+      return value;
     },
-    set: function reactiveSetter (newVal) {
-      var value = getter ? getter.call(obj) : val
+    set: function reactiveSetter(newVal) {
+      var value = getter ? getter.call(obj) : val;
       if (newVal === value) {
-        return
+        return;
       }
       if (setter) {
-        setter.call(obj, newVal)
+        setter.call(obj, newVal);
       } else {
-        val = newVal
+        val = newVal;
       }
-      childOb = observe(newVal)
-      dep.notify()
-    }
-  })
+      childOb = observe(newVal);
+      dep.notify();
+    },
+  });
 }

@@ -1,9 +1,9 @@
-import publicDirectives from '../directives/public/index'
-import internalDirectives from '../directives/internal/index'
-import { compileProps } from './compile-props'
-import { parseText, tokensToExp } from '../parsers/text'
-import { parseDirective } from '../parsers/directive'
-import { parseTemplate } from '../parsers/template'
+import publicDirectives from "../directives/public/index";
+import internalDirectives from "../directives/internal/index";
+import { compileProps } from "./compile-props";
+import { parseText, tokensToExp } from "../parsers/text";
+import { parseDirective } from "../parsers/directive";
+import { parseTemplate } from "../parsers/template";
 import {
   _toString,
   resolveAsset,
@@ -15,19 +15,19 @@ import {
   checkComponentAttr,
   findRef,
   defineReactive,
-  getAttr
-} from '../util/index'
+  getAttr,
+} from "../util/index";
 
 // special binding prefixes
-const bindRE = /^v-bind:|^:/
-const onRE = /^v-on:|^@/
-const dirAttrRE = /^v-([^:]+)(?:$|:(.*)$)/
-const modifierRE = /\.[^\.]+/g
-const transitionRE = /^(v-bind:|:)?transition$/
+const bindRE = /^v-bind:|^:/;
+const onRE = /^v-on:|^@/;
+const dirAttrRE = /^v-([^:]+)(?:$|:(.*)$)/;
+const modifierRE = /\.[^\.]+/g;
+const transitionRE = /^(v-bind:|:)?transition$/;
 
 // default directive priority
-const DEFAULT_PRIORITY = 1000
-const DEFAULT_TERMINAL_PRIORITY = 2000
+const DEFAULT_PRIORITY = 1000;
+const DEFAULT_TERMINAL_PRIORITY = 2000;
 
 /**
  * Compile a template and return a reusable composite link
@@ -46,18 +46,15 @@ const DEFAULT_TERMINAL_PRIORITY = 2000
  * @return {Function}
  */
 
-export function compile (el, options, partial) {
+export function compile(el, options, partial) {
   // link function for the node itself.
-  var nodeLinkFn = partial || !options._asComponent
-    ? compileNode(el, options)
-    : null
+  var nodeLinkFn =
+    partial || !options._asComponent ? compileNode(el, options) : null;
   // link function for the childNodes
   var childLinkFn =
-    !(nodeLinkFn && nodeLinkFn.terminal) &&
-    !isScript(el) &&
-    el.hasChildNodes()
+    !(nodeLinkFn && nodeLinkFn.terminal) && !isScript(el) && el.hasChildNodes()
       ? compileNodeList(el.childNodes, options)
-      : null
+      : null;
 
   /**
    * A composite linker function to be called on a already
@@ -72,16 +69,16 @@ export function compile (el, options, partial) {
    * @return {Function|undefined}
    */
 
-  return function compositeLinkFn (vm, el, host, scope, frag) {
+  return function compositeLinkFn(vm, el, host, scope, frag) {
     // cache childNodes before linking parent, fix #657
-    var childNodes = toArray(el.childNodes)
+    var childNodes = toArray(el.childNodes);
     // link
-    var dirs = linkAndCapture(function compositeLinkCapturer () {
-      if (nodeLinkFn) nodeLinkFn(vm, el, host, scope, frag)
-      if (childLinkFn) childLinkFn(vm, childNodes, host, scope, frag)
-    }, vm)
-    return makeUnlinkFn(vm, dirs)
-  }
+    var dirs = linkAndCapture(function compositeLinkCapturer() {
+      if (nodeLinkFn) nodeLinkFn(vm, el, host, scope, frag);
+      if (childLinkFn) childLinkFn(vm, childNodes, host, scope, frag);
+    }, vm);
+    return makeUnlinkFn(vm, dirs);
+  };
 }
 
 /**
@@ -92,24 +89,24 @@ export function compile (el, options, partial) {
  * @param {Vue} vm
  */
 
-function linkAndCapture (linker, vm) {
+function linkAndCapture(linker, vm) {
   /* istanbul ignore if */
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === "production") {
     // reset directives before every capture in production
     // mode, so that when unlinking we don't need to splice
     // them out (which turns out to be a perf hit).
     // they are kept in development mode because they are
     // useful for Vue's own tests.
-    vm._directives = []
+    vm._directives = [];
   }
-  var originalDirCount = vm._directives.length
-  linker()
-  var dirs = vm._directives.slice(originalDirCount)
-  sortDirectives(dirs)
+  var originalDirCount = vm._directives.length;
+  linker();
+  var dirs = vm._directives.slice(originalDirCount);
+  sortDirectives(dirs);
   for (var i = 0, l = dirs.length; i < l; i++) {
-    dirs[i]._bind()
+    dirs[i]._bind();
   }
-  return dirs
+  return dirs;
 }
 
 /**
@@ -117,31 +114,31 @@ function linkAndCapture (linker, vm) {
  *
  * @param {Array} dirs
  */
-function sortDirectives (dirs) {
-  if (dirs.length === 0) return
+function sortDirectives(dirs) {
+  if (dirs.length === 0) return;
 
-  var groupedMap = {}
-  var i, j, k, l
-  var index = 0
-  var priorities = []
+  var groupedMap = {};
+  var i, j, k, l;
+  var index = 0;
+  var priorities = [];
   for (i = 0, j = dirs.length; i < j; i++) {
-    var dir = dirs[i]
-    var priority = dir.descriptor.def.priority || DEFAULT_PRIORITY
-    var array = groupedMap[priority]
+    var dir = dirs[i];
+    var priority = dir.descriptor.def.priority || DEFAULT_PRIORITY;
+    var array = groupedMap[priority];
     if (!array) {
-      array = groupedMap[priority] = []
-      priorities.push(priority)
+      array = groupedMap[priority] = [];
+      priorities.push(priority);
     }
-    array.push(dir)
+    array.push(dir);
   }
 
   priorities.sort(function (a, b) {
-    return a > b ? -1 : a === b ? 0 : 1
-  })
+    return a > b ? -1 : a === b ? 0 : 1;
+  });
   for (i = 0, j = priorities.length; i < j; i++) {
-    var group = groupedMap[priorities[i]]
+    var group = groupedMap[priorities[i]];
     for (k = 0, l = group.length; k < l; k++) {
-      dirs[index++] = group[k]
+      dirs[index++] = group[k];
     }
   }
 }
@@ -161,16 +158,16 @@ function sortDirectives (dirs) {
  * @return {Function}
  */
 
-function makeUnlinkFn (vm, dirs, context, contextDirs) {
-  function unlink (destroying) {
-    teardownDirs(vm, dirs, destroying)
+function makeUnlinkFn(vm, dirs, context, contextDirs) {
+  function unlink(destroying) {
+    teardownDirs(vm, dirs, destroying);
     if (context && contextDirs) {
-      teardownDirs(context, contextDirs)
+      teardownDirs(context, contextDirs);
     }
   }
   // expose linked directives
-  unlink.dirs = dirs
-  return unlink
+  unlink.dirs = dirs;
+  return unlink;
 }
 
 /**
@@ -181,12 +178,12 @@ function makeUnlinkFn (vm, dirs, context, contextDirs) {
  * @param {Boolean} destroying
  */
 
-function teardownDirs (vm, dirs, destroying) {
-  var i = dirs.length
+function teardownDirs(vm, dirs, destroying) {
+  var i = dirs.length;
   while (i--) {
-    dirs[i]._teardown()
-    if (process.env.NODE_ENV !== 'production' && !destroying) {
-      vm._directives.$remove(dirs[i])
+    dirs[i]._teardown();
+    if (process.env.NODE_ENV !== "production" && !destroying) {
+      vm._directives.$remove(dirs[i]);
     }
   }
 }
@@ -201,12 +198,12 @@ function teardownDirs (vm, dirs, destroying) {
  * @return {Function}
  */
 
-export function compileAndLinkProps (vm, el, props, scope) {
-  var propsLinkFn = compileProps(el, props, vm)
+export function compileAndLinkProps(vm, el, props, scope) {
+  var propsLinkFn = compileProps(el, props, vm);
   var propDirs = linkAndCapture(function () {
-    propsLinkFn(vm, scope)
-  }, vm)
-  return makeUnlinkFn(vm, propDirs)
+    propsLinkFn(vm, scope);
+  }, vm);
+  return makeUnlinkFn(vm, propDirs);
 }
 
 /**
@@ -224,10 +221,10 @@ export function compileAndLinkProps (vm, el, props, scope) {
  * @return {Function}
  */
 
-export function compileRoot (el, options, contextOptions) {
-  var containerAttrs = options._containerAttrs
-  var replacerAttrs = options._replacerAttrs
-  var contextLinkFn, replacerLinkFn
+export function compileRoot(el, options, contextOptions) {
+  var containerAttrs = options._containerAttrs;
+  var replacerAttrs = options._replacerAttrs;
+  var contextLinkFn, replacerLinkFn;
 
   // only need to compile other attributes for
   // non-fragment instances
@@ -237,68 +234,75 @@ export function compileRoot (el, options, contextOptions) {
     if (options._asComponent) {
       // 2. container attributes
       if (containerAttrs && contextOptions) {
-        contextLinkFn = compileDirectives(containerAttrs, contextOptions)
+        contextLinkFn = compileDirectives(containerAttrs, contextOptions);
       }
       if (replacerAttrs) {
         // 3. replacer attributes
-        replacerLinkFn = compileDirectives(replacerAttrs, options)
+        replacerLinkFn = compileDirectives(replacerAttrs, options);
       }
     } else {
       // non-component, just compile as a normal element.
-      replacerLinkFn = compileDirectives(el.attributes, options)
+      replacerLinkFn = compileDirectives(el.attributes, options);
     }
-  } else if (process.env.NODE_ENV !== 'production' && containerAttrs) {
+  } else if (process.env.NODE_ENV !== "production" && containerAttrs) {
     // warn container directives for fragment instances
     var names = containerAttrs
       .filter(function (attr) {
         // allow vue-loader/vueify scoped css attributes
-        return attr.name.indexOf('_v-') < 0 &&
+        return (
+          attr.name.indexOf("_v-") < 0 &&
           // allow event listeners
           !onRE.test(attr.name) &&
           // allow slots
-          attr.name !== 'slot'
+          attr.name !== "slot"
+        );
       })
       .map(function (attr) {
-        return '"' + attr.name + '"'
-      })
+        return '"' + attr.name + '"';
+      });
     if (names.length) {
-      var plural = names.length > 1
+      var plural = names.length > 1;
 
-      var componentName = options.el.tagName.toLowerCase()
-      if (componentName === 'component' && options.name) {
-        componentName += ':' + options.name
+      var componentName = options.el.tagName.toLowerCase();
+      if (componentName === "component" && options.name) {
+        componentName += ":" + options.name;
       }
 
       warn(
-        'Attribute' + (plural ? 's ' : ' ') + names.join(', ') +
-        (plural ? ' are' : ' is') + ' ignored on component ' +
-        '<' + componentName + '> because ' +
-        'the component is a fragment instance: ' +
-        'http://vuejs.org/guide/components.html#Fragment-Instance'
-      )
+        "Attribute" +
+          (plural ? "s " : " ") +
+          names.join(", ") +
+          (plural ? " are" : " is") +
+          " ignored on component " +
+          "<" +
+          componentName +
+          "> because " +
+          "the component is a fragment instance: " +
+          "http://vuejs.org/guide/components.html#Fragment-Instance"
+      );
     }
   }
 
-  options._containerAttrs = options._replacerAttrs = null
-  return function rootLinkFn (vm, el, scope) {
+  options._containerAttrs = options._replacerAttrs = null;
+  return function rootLinkFn(vm, el, scope) {
     // link context scope dirs
-    var context = vm._context
-    var contextDirs
+    var context = vm._context;
+    var contextDirs;
     if (context && contextLinkFn) {
       contextDirs = linkAndCapture(function () {
-        contextLinkFn(context, el, null, scope)
-      }, context)
+        contextLinkFn(context, el, null, scope);
+      }, context);
     }
 
     // link self
     var selfDirs = linkAndCapture(function () {
-      if (replacerLinkFn) replacerLinkFn(vm, el)
-    }, vm)
+      if (replacerLinkFn) replacerLinkFn(vm, el);
+    }, vm);
 
     // return the unlink function that tearsdown context
     // container directives.
-    return makeUnlinkFn(vm, selfDirs, context, contextDirs)
-  }
+    return makeUnlinkFn(vm, selfDirs, context, contextDirs);
+  };
 }
 
 /**
@@ -310,14 +314,14 @@ export function compileRoot (el, options, contextOptions) {
  * @return {Function|null}
  */
 
-function compileNode (node, options) {
-  var type = node.nodeType
+function compileNode(node, options) {
+  var type = node.nodeType;
   if (type === 1 && !isScript(node)) {
-    return compileElement(node, options)
+    return compileElement(node, options);
   } else if (type === 3 && node.data.trim()) {
-    return compileTextNode(node, options)
+    return compileTextNode(node, options);
   } else {
-    return null
+    return null;
   }
 }
 
@@ -329,41 +333,41 @@ function compileNode (node, options) {
  * @return {Function|null}
  */
 
-function compileElement (el, options) {
+function compileElement(el, options) {
   // preprocess textareas.
   // textarea treats its text content as the initial value.
   // just bind it as an attr directive for value.
-  if (el.tagName === 'TEXTAREA') {
+  if (el.tagName === "TEXTAREA") {
     // a textarea which has v-pre attr should skip complie.
-    if (getAttr(el, 'v-pre') !== null) {
-      return skip
+    if (getAttr(el, "v-pre") !== null) {
+      return skip;
     }
-    var tokens = parseText(el.value)
+    var tokens = parseText(el.value);
     if (tokens) {
-      el.setAttribute(':value', tokensToExp(tokens))
-      el.value = ''
+      el.setAttribute(":value", tokensToExp(tokens));
+      el.value = "";
     }
   }
-  var linkFn
-  var hasAttrs = el.hasAttributes()
-  var attrs = hasAttrs && toArray(el.attributes)
+  var linkFn;
+  var hasAttrs = el.hasAttributes();
+  var attrs = hasAttrs && toArray(el.attributes);
   // check terminal directives (for & if)
   if (hasAttrs) {
-    linkFn = checkTerminalDirectives(el, attrs, options)
+    linkFn = checkTerminalDirectives(el, attrs, options);
   }
   // check element directives
   if (!linkFn) {
-    linkFn = checkElementDirectives(el, options)
+    linkFn = checkElementDirectives(el, options);
   }
   // check component
   if (!linkFn) {
-    linkFn = checkComponent(el, options)
+    linkFn = checkComponent(el, options);
   }
   // normal directives
   if (!linkFn && hasAttrs) {
-    linkFn = compileDirectives(attrs, options)
+    linkFn = compileDirectives(attrs, options);
   }
-  return linkFn
+  return linkFn;
 }
 
 /**
@@ -374,15 +378,15 @@ function compileElement (el, options) {
  * @return {Function|null} textNodeLinkFn
  */
 
-function compileTextNode (node, options) {
+function compileTextNode(node, options) {
   // skip marked text nodes
   if (node._skip) {
-    return removeText
+    return removeText;
   }
 
-  var tokens = parseText(node.wholeText)
+  var tokens = parseText(node.wholeText);
   if (!tokens) {
-    return null
+    return null;
   }
 
   // mark adjacent text nodes as skipped,
@@ -390,22 +394,22 @@ function compileTextNode (node, options) {
   // all adjacent text nodes together. This fixes
   // issues in IE where sometimes it splits up a single
   // text node into multiple ones.
-  var next = node.nextSibling
+  var next = node.nextSibling;
   while (next && next.nodeType === 3) {
-    next._skip = true
-    next = next.nextSibling
+    next._skip = true;
+    next = next.nextSibling;
   }
 
-  var frag = document.createDocumentFragment()
-  var el, token
+  var frag = document.createDocumentFragment();
+  var el, token;
   for (var i = 0, l = tokens.length; i < l; i++) {
-    token = tokens[i]
+    token = tokens[i];
     el = token.tag
       ? processTextToken(token, options)
-      : document.createTextNode(token.value)
-    frag.appendChild(el)
+      : document.createTextNode(token.value);
+    frag.appendChild(el);
   }
-  return makeTextNodeLinkFn(tokens, frag, options)
+  return makeTextNodeLinkFn(tokens, frag, options);
 }
 
 /**
@@ -415,8 +419,8 @@ function compileTextNode (node, options) {
  * @param {Text} node
  */
 
-function removeText (vm, node) {
-  remove(node)
+function removeText(vm, node) {
+  remove(node);
 }
 
 /**
@@ -427,33 +431,33 @@ function removeText (vm, node) {
  * @return {Node}
  */
 
-function processTextToken (token, options) {
-  var el
+function processTextToken(token, options) {
+  var el;
   if (token.oneTime) {
-    el = document.createTextNode(token.value)
+    el = document.createTextNode(token.value);
   } else {
     if (token.html) {
-      el = document.createComment('v-html')
-      setTokenType('html')
+      el = document.createComment("v-html");
+      setTokenType("html");
     } else {
       // IE will clean up empty textNodes during
       // frag.cloneNode(true), so we have to give it
       // something here...
-      el = document.createTextNode(' ')
-      setTokenType('text')
+      el = document.createTextNode(" ");
+      setTokenType("text");
     }
   }
-  function setTokenType (type) {
-    if (token.descriptor) return
-    var parsed = parseDirective(token.value)
+  function setTokenType(type) {
+    if (token.descriptor) return;
+    var parsed = parseDirective(token.value);
     token.descriptor = {
       name: type,
       def: publicDirectives[type],
       expression: parsed.expression,
-      filters: parsed.filters
-    }
+      filters: parsed.filters,
+    };
   }
-  return el
+  return el;
 }
 
 /**
@@ -463,30 +467,30 @@ function processTextToken (token, options) {
  * @param {DocumentFragment} frag
  */
 
-function makeTextNodeLinkFn (tokens, frag) {
-  return function textNodeLinkFn (vm, el, host, scope) {
-    var fragClone = frag.cloneNode(true)
-    var childNodes = toArray(fragClone.childNodes)
-    var token, value, node
+function makeTextNodeLinkFn(tokens, frag) {
+  return function textNodeLinkFn(vm, el, host, scope) {
+    var fragClone = frag.cloneNode(true);
+    var childNodes = toArray(fragClone.childNodes);
+    var token, value, node;
     for (var i = 0, l = tokens.length; i < l; i++) {
-      token = tokens[i]
-      value = token.value
+      token = tokens[i];
+      value = token.value;
       if (token.tag) {
-        node = childNodes[i]
+        node = childNodes[i];
         if (token.oneTime) {
-          value = (scope || vm).$eval(value)
+          value = (scope || vm).$eval(value);
           if (token.html) {
-            replace(node, parseTemplate(value, true))
+            replace(node, parseTemplate(value, true));
           } else {
-            node.data = _toString(value)
+            node.data = _toString(value);
           }
         } else {
-          vm._bindDir(token.descriptor, node, host, scope)
+          vm._bindDir(token.descriptor, node, host, scope);
         }
       }
     }
-    replace(el, fragClone)
-  }
+    replace(el, fragClone);
+  };
 }
 
 /**
@@ -497,23 +501,21 @@ function makeTextNodeLinkFn (tokens, frag) {
  * @return {Function|undefined}
  */
 
-function compileNodeList (nodeList, options) {
-  var linkFns = []
-  var nodeLinkFn, childLinkFn, node
+function compileNodeList(nodeList, options) {
+  var linkFns = [];
+  var nodeLinkFn, childLinkFn, node;
   for (var i = 0, l = nodeList.length; i < l; i++) {
-    node = nodeList[i]
-    nodeLinkFn = compileNode(node, options)
+    node = nodeList[i];
+    nodeLinkFn = compileNode(node, options);
     childLinkFn =
       !(nodeLinkFn && nodeLinkFn.terminal) &&
-      node.tagName !== 'SCRIPT' &&
+      node.tagName !== "SCRIPT" &&
       node.hasChildNodes()
         ? compileNodeList(node.childNodes, options)
-        : null
-    linkFns.push(nodeLinkFn, childLinkFn)
+        : null;
+    linkFns.push(nodeLinkFn, childLinkFn);
   }
-  return linkFns.length
-    ? makeChildLinkFn(linkFns)
-    : null
+  return linkFns.length ? makeChildLinkFn(linkFns) : null;
 }
 
 /**
@@ -523,23 +525,23 @@ function compileNodeList (nodeList, options) {
  * @return {Function} childLinkFn
  */
 
-function makeChildLinkFn (linkFns) {
-  return function childLinkFn (vm, nodes, host, scope, frag) {
-    var node, nodeLinkFn, childrenLinkFn
+function makeChildLinkFn(linkFns) {
+  return function childLinkFn(vm, nodes, host, scope, frag) {
+    var node, nodeLinkFn, childrenLinkFn;
     for (var i = 0, n = 0, l = linkFns.length; i < l; n++) {
-      node = nodes[n]
-      nodeLinkFn = linkFns[i++]
-      childrenLinkFn = linkFns[i++]
+      node = nodes[n];
+      nodeLinkFn = linkFns[i++];
+      childrenLinkFn = linkFns[i++];
       // cache childNodes before linking parent, fix #657
-      var childNodes = toArray(node.childNodes)
+      var childNodes = toArray(node.childNodes);
       if (nodeLinkFn) {
-        nodeLinkFn(vm, node, host, scope, frag)
+        nodeLinkFn(vm, node, host, scope, frag);
       }
       if (childrenLinkFn) {
-        childrenLinkFn(vm, childNodes, host, scope, frag)
+        childrenLinkFn(vm, childNodes, host, scope, frag);
       }
     }
-  }
+  };
 }
 
 /**
@@ -550,14 +552,14 @@ function makeChildLinkFn (linkFns) {
  * @param {Object} options
  */
 
-function checkElementDirectives (el, options) {
-  var tag = el.tagName.toLowerCase()
+function checkElementDirectives(el, options) {
+  var tag = el.tagName.toLowerCase();
   if (commonTagRE.test(tag)) {
-    return
+    return;
   }
-  var def = resolveAsset(options, 'elementDirectives', tag)
+  var def = resolveAsset(options, "elementDirectives", tag);
   if (def) {
-    return makeTerminalNodeLinkFn(el, tag, '', options, def)
+    return makeTerminalNodeLinkFn(el, tag, "", options, def);
   }
 }
 
@@ -570,27 +572,27 @@ function checkElementDirectives (el, options) {
  * @return {Function|undefined}
  */
 
-function checkComponent (el, options) {
-  var component = checkComponentAttr(el, options)
+function checkComponent(el, options) {
+  var component = checkComponentAttr(el, options);
   if (component) {
-    var ref = findRef(el)
+    var ref = findRef(el);
     var descriptor = {
-      name: 'component',
+      name: "component",
       ref: ref,
       expression: component.id,
       def: internalDirectives.component,
       modifiers: {
-        literal: !component.dynamic
-      }
-    }
+        literal: !component.dynamic,
+      },
+    };
     var componentLinkFn = function (vm, el, host, scope, frag) {
       if (ref) {
-        defineReactive((scope || vm).$refs, ref, null)
+        defineReactive((scope || vm).$refs, ref, null);
       }
-      vm._bindDir(descriptor, el, host, scope, frag)
-    }
-    componentLinkFn.terminal = true
-    return componentLinkFn
+      vm._bindDir(descriptor, el, host, scope, frag);
+    };
+    componentLinkFn.terminal = true;
+    return componentLinkFn;
   }
 }
 
@@ -604,45 +606,66 @@ function checkComponent (el, options) {
  * @return {Function} terminalLinkFn
  */
 
-function checkTerminalDirectives (el, attrs, options) {
+function checkTerminalDirectives(el, attrs, options) {
   // skip v-pre
-  if (getAttr(el, 'v-pre') !== null) {
-    return skip
+  if (getAttr(el, "v-pre") !== null) {
+    return skip;
   }
   // skip v-else block, but only if following v-if
-  if (el.hasAttribute('v-else')) {
-    var prev = el.previousElementSibling
-    if (prev && prev.hasAttribute('v-if')) {
-      return skip
+  if (el.hasAttribute("v-else")) {
+    var prev = el.previousElementSibling;
+    if (prev && prev.hasAttribute("v-if")) {
+      return skip;
     }
   }
 
-  var attr, name, value, modifiers, matched, dirName, rawName, arg, def, termDef
+  var attr,
+    name,
+    value,
+    modifiers,
+    matched,
+    dirName,
+    rawName,
+    arg,
+    def,
+    termDef;
   for (var i = 0, j = attrs.length; i < j; i++) {
-    attr = attrs[i]
-    name = attr.name.replace(modifierRE, '')
+    attr = attrs[i];
+    name = attr.name.replace(modifierRE, "");
     if ((matched = name.match(dirAttrRE))) {
-      def = resolveAsset(options, 'directives', matched[1])
+      def = resolveAsset(options, "directives", matched[1]);
       if (def && def.terminal) {
-        if (!termDef || ((def.priority || DEFAULT_TERMINAL_PRIORITY) > termDef.priority)) {
-          termDef = def
-          rawName = attr.name
-          modifiers = parseModifiers(attr.name)
-          value = attr.value
-          dirName = matched[1]
-          arg = matched[2]
+        if (
+          !termDef ||
+          (def.priority || DEFAULT_TERMINAL_PRIORITY) > termDef.priority
+        ) {
+          termDef = def;
+          rawName = attr.name;
+          modifiers = parseModifiers(attr.name);
+          value = attr.value;
+          dirName = matched[1];
+          arg = matched[2];
         }
       }
     }
   }
 
   if (termDef) {
-    return makeTerminalNodeLinkFn(el, dirName, value, options, termDef, rawName, arg, modifiers)
+    return makeTerminalNodeLinkFn(
+      el,
+      dirName,
+      value,
+      options,
+      termDef,
+      rawName,
+      arg,
+      modifiers
+    );
   }
 }
 
-function skip () {}
-skip.terminal = true
+function skip() {}
+skip.terminal = true;
 
 /**
  * Build a node link function for a terminal directive.
@@ -661,8 +684,17 @@ skip.terminal = true
  * @return {Function} terminalLinkFn
  */
 
-function makeTerminalNodeLinkFn (el, dirName, value, options, def, rawName, arg, modifiers) {
-  var parsed = parseDirective(value)
+function makeTerminalNodeLinkFn(
+  el,
+  dirName,
+  value,
+  options,
+  def,
+  rawName,
+  arg,
+  modifiers
+) {
+  var parsed = parseDirective(value);
   var descriptor = {
     name: dirName,
     arg: arg,
@@ -671,20 +703,20 @@ function makeTerminalNodeLinkFn (el, dirName, value, options, def, rawName, arg,
     raw: value,
     attr: rawName,
     modifiers: modifiers,
-    def: def
-  }
+    def: def,
+  };
   // check ref for v-for, v-if and router-view
-  if (dirName === 'for' || dirName === 'router-view') {
-    descriptor.ref = findRef(el)
+  if (dirName === "for" || dirName === "router-view") {
+    descriptor.ref = findRef(el);
   }
-  var fn = function terminalNodeLinkFn (vm, el, host, scope, frag) {
+  var fn = function terminalNodeLinkFn(vm, el, host, scope, frag) {
     if (descriptor.ref) {
-      defineReactive((scope || vm).$refs, descriptor.ref, null)
+      defineReactive((scope || vm).$refs, descriptor.ref, null);
     }
-    vm._bindDir(descriptor, el, host, scope, frag)
-  }
-  fn.terminal = true
-  return fn
+    vm._bindDir(descriptor, el, host, scope, frag);
+  };
+  fn.terminal = true;
+  return fn;
 }
 
 /**
@@ -695,76 +727,91 @@ function makeTerminalNodeLinkFn (el, dirName, value, options, def, rawName, arg,
  * @return {Function}
  */
 
-function compileDirectives (attrs, options) {
-  var i = attrs.length
-  var dirs = []
-  var attr, name, value, rawName, rawValue, dirName, arg, modifiers, dirDef, tokens, matched
+function compileDirectives(attrs, options) {
+  var i = attrs.length;
+  var dirs = [];
+  var attr,
+    name,
+    value,
+    rawName,
+    rawValue,
+    dirName,
+    arg,
+    modifiers,
+    dirDef,
+    tokens,
+    matched;
   while (i--) {
-    attr = attrs[i]
-    name = rawName = attr.name
-    value = rawValue = attr.value
-    tokens = parseText(value)
+    attr = attrs[i];
+    name = rawName = attr.name;
+    value = rawValue = attr.value;
+    tokens = parseText(value);
     // reset arg
-    arg = null
+    arg = null;
     // check modifiers
-    modifiers = parseModifiers(name)
-    name = name.replace(modifierRE, '')
+    modifiers = parseModifiers(name);
+    name = name.replace(modifierRE, "");
 
     // attribute interpolations
     if (tokens) {
-      value = tokensToExp(tokens)
-      arg = name
-      pushDir('bind', publicDirectives.bind, tokens)
+      value = tokensToExp(tokens);
+      arg = name;
+      pushDir("bind", publicDirectives.bind, tokens);
       // warn against mixing mustaches with v-bind
-      if (process.env.NODE_ENV !== 'production') {
-        if (name === 'class' && Array.prototype.some.call(attrs, function (attr) {
-          return attr.name === ':class' || attr.name === 'v-bind:class'
-        })) {
+      if (process.env.NODE_ENV !== "production") {
+        if (
+          name === "class" &&
+          Array.prototype.some.call(attrs, function (attr) {
+            return attr.name === ":class" || attr.name === "v-bind:class";
+          })
+        ) {
           warn(
-            'class="' + rawValue + '": Do not mix mustache interpolation ' +
-            'and v-bind for "class" on the same element. Use one or the other.',
+            'class="' +
+              rawValue +
+              '": Do not mix mustache interpolation ' +
+              'and v-bind for "class" on the same element. Use one or the other.',
             options
-          )
+          );
         }
       }
-    } else
+    }
 
     // special attribute: transition
-    if (transitionRE.test(name)) {
-      modifiers.literal = !bindRE.test(name)
-      pushDir('transition', internalDirectives.transition)
-    } else
+    else if (transitionRE.test(name)) {
+      modifiers.literal = !bindRE.test(name);
+      pushDir("transition", internalDirectives.transition);
+    }
 
     // event handlers
-    if (onRE.test(name)) {
-      arg = name.replace(onRE, '')
-      pushDir('on', publicDirectives.on)
-    } else
+    else if (onRE.test(name)) {
+      arg = name.replace(onRE, "");
+      pushDir("on", publicDirectives.on);
+    }
 
     // attribute bindings
-    if (bindRE.test(name)) {
-      dirName = name.replace(bindRE, '')
-      if (dirName === 'style' || dirName === 'class') {
-        pushDir(dirName, internalDirectives[dirName])
+    else if (bindRE.test(name)) {
+      dirName = name.replace(bindRE, "");
+      if (dirName === "style" || dirName === "class") {
+        pushDir(dirName, internalDirectives[dirName]);
       } else {
-        arg = dirName
-        pushDir('bind', publicDirectives.bind)
+        arg = dirName;
+        pushDir("bind", publicDirectives.bind);
       }
-    } else
+    }
 
     // normal directives
-    if ((matched = name.match(dirAttrRE))) {
-      dirName = matched[1]
-      arg = matched[2]
+    else if ((matched = name.match(dirAttrRE))) {
+      dirName = matched[1];
+      arg = matched[2];
 
       // skip v-else (when used with v-show)
-      if (dirName === 'else') {
-        continue
+      if (dirName === "else") {
+        continue;
       }
 
-      dirDef = resolveAsset(options, 'directives', dirName, true)
+      dirDef = resolveAsset(options, "directives", dirName, true);
       if (dirDef) {
-        pushDir(dirName, dirDef)
+        pushDir(dirName, dirDef);
       }
     }
   }
@@ -777,9 +824,9 @@ function compileDirectives (attrs, options) {
    * @param {Array} [interpTokens]
    */
 
-  function pushDir (dirName, def, interpTokens) {
-    var hasOneTimeToken = interpTokens && hasOneTime(interpTokens)
-    var parsed = !hasOneTimeToken && parseDirective(value)
+  function pushDir(dirName, def, interpTokens) {
+    var hasOneTimeToken = interpTokens && hasOneTime(interpTokens);
+    var parsed = !hasOneTimeToken && parseDirective(value);
     dirs.push({
       name: dirName,
       attr: rawName,
@@ -793,12 +840,12 @@ function compileDirectives (attrs, options) {
       expression: parsed && parsed.expression,
       filters: parsed && parsed.filters,
       interp: interpTokens,
-      hasOneTime: hasOneTimeToken
-    })
+      hasOneTime: hasOneTimeToken,
+    });
   }
 
   if (dirs.length) {
-    return makeNodeLinkFn(dirs)
+    return makeNodeLinkFn(dirs);
   }
 }
 
@@ -809,16 +856,16 @@ function compileDirectives (attrs, options) {
  * @return {Object}
  */
 
-function parseModifiers (name) {
-  var res = Object.create(null)
-  var match = name.match(modifierRE)
+function parseModifiers(name) {
+  var res = Object.create(null);
+  var match = name.match(modifierRE);
   if (match) {
-    var i = match.length
+    var i = match.length;
     while (i--) {
-      res[match[i].slice(1)] = true
+      res[match[i].slice(1)] = true;
     }
   }
-  return res
+  return res;
 }
 
 /**
@@ -828,14 +875,14 @@ function parseModifiers (name) {
  * @return {Function} directivesLinkFn
  */
 
-function makeNodeLinkFn (directives) {
-  return function nodeLinkFn (vm, el, host, scope, frag) {
+function makeNodeLinkFn(directives) {
+  return function nodeLinkFn(vm, el, host, scope, frag) {
     // reverse apply because it's sorted low to high
-    var i = directives.length
+    var i = directives.length;
     while (i--) {
-      vm._bindDir(directives[i], el, host, scope, frag)
+      vm._bindDir(directives[i], el, host, scope, frag);
     }
-  }
+  };
 }
 
 /**
@@ -845,16 +892,16 @@ function makeNodeLinkFn (directives) {
  * @return {Boolean}
  */
 
-function hasOneTime (tokens) {
-  var i = tokens.length
+function hasOneTime(tokens) {
+  var i = tokens.length;
   while (i--) {
-    if (tokens[i].oneTime) return true
+    if (tokens[i].oneTime) return true;
   }
 }
 
-function isScript (el) {
-  return el.tagName === 'SCRIPT' && (
-    !el.hasAttribute('type') ||
-    el.getAttribute('type') === 'text/javascript'
-  )
+function isScript(el) {
+  return (
+    el.tagName === "SCRIPT" &&
+    (!el.hasAttribute("type") || el.getAttribute("type") === "text/javascript")
+  );
 }
