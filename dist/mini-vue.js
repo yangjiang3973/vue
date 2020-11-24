@@ -8245,38 +8245,37 @@ var vm = new _index_js__WEBPACK_IMPORTED_MODULE_0__.default({
   el: "#app",
   data: {
     // title: 'vue source code',
-    title: 124,
-    intro: "current v0.11",
-    word: "Hello World!",
-    flag: true,
-    showEl: true,
-    list: [1, 2, 3, 4, 5, 6],
-    firstName: "Yang",
-    lastName: "Jiang",
-    msg: "hello!",
-    observeData: {
-      a: "1",
-      b: "2"
-    },
-    simpleArr: [1, 2, 3, 4, 5],
-    nestedArr: [1, [2, 3, 4], 5],
-    objArr: [{
-      a: 1
-    }, {
-      b: 2
-    }, {
-      c: 3
-    }]
-  },
-  // data: [1, 2, 3],  // data cannot be array, will show Vue warning
-  computed: {
-    fullName: {
-      // the getter should return the desired value
-      get: function get() {
-        return this.firstName + " " + this.lastName;
+    // title: 124,
+    // intro: "current v0.11",
+    // word: "Hello World!",
+    // flag: true,
+    // showEl: true,
+    // list: [1, 2, 3, 4, 5, 6],
+    // firstName: "Yang",
+    // lastName: "Jiang",
+    // msg: "hello!",
+    // observeData: {
+    //   a: "1",
+    //   b: "2",
+    // },
+    // simpleArr: [1, 2, 3, 4, 5],
+    // nestedArr: [1, [2, 3, 4], 5],
+    // objArr: [{ a: 1 }, { b: 2 }, { c: 3 }],
+    a: {
+      b: {
+        c: 9
       }
     }
   },
+  // data: [1, 2, 3],  // data cannot be array, will show Vue warning
+  //   computed: {
+  //     fullName: {
+  //       // the getter should return the desired value
+  //       get: function () {
+  //         return this.firstName + " " + this.lastName;
+  //       },
+  //     },
+  //   },
   methods: {
     changeWord: function changeWord() {
       this.word = "fuck world";
@@ -8506,6 +8505,7 @@ Dep.prototype.removeSub = function (sub) {
 
 
 Dep.prototype.depend = function () {
+  console.log(1);
   Dep.target.addDep(this);
 };
 /**
@@ -8583,7 +8583,8 @@ function withoutConversion(fn) {
 function Observer(value) {
   this.value = value;
   this.dep = new _dep__WEBPACK_IMPORTED_MODULE_0__.default();
-  (0,_util_index__WEBPACK_IMPORTED_MODULE_2__.def)(value, "__ob__", this); //* NOTE: obviously, the different strategy for Array and Obj,
+  console.log("4");
+  (0,_util_index__WEBPACK_IMPORTED_MODULE_2__.def)(value, "__ob__", this); //* NOTE: obviously, there different strategy for Array and Obj,
   //* the do not share an observe function to observe changes.
   //* maybe this is why my array is under observed better than Vue(change by index I mean)
 
@@ -8747,9 +8748,12 @@ function defineReactive(obj, key, val) {
       var value = getter ? getter.call(obj) : val;
 
       if (_dep__WEBPACK_IMPORTED_MODULE_0__.default.target) {
+        console.log(0);
         dep.depend();
+        console.log(2);
 
         if (childOb) {
+          console.log(3);
           childOb.dep.depend();
         }
 
@@ -12602,7 +12606,7 @@ function Watcher(vm, expOrFn, cb, options) {
     (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.extend)(this, options);
   }
 
-  var isFn = typeof expOrFn === 'function';
+  var isFn = typeof expOrFn === "function";
   this.vm = vm;
 
   vm._watchers.push(this);
@@ -12648,7 +12652,7 @@ Watcher.prototype.get = function () {
     value = this.getter.call(scope, scope);
   } catch (e) {
     if ( true && _config__WEBPACK_IMPORTED_MODULE_0__.default.warnExpressionErrors) {
-      (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)('Error when evaluating expression ' + '"' + this.expression + '": ' + e.toString(), this.vm);
+      (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)("Error when evaluating expression " + '"' + this.expression + '": ' + e.toString(), this.vm);
     }
   } // "touch" every property so they are all tracked as
   // dependencies for deep watching
@@ -12691,7 +12695,7 @@ Watcher.prototype.set = function (value) {
     this.setter.call(scope, scope, value);
   } catch (e) {
     if ( true && _config__WEBPACK_IMPORTED_MODULE_0__.default.warnExpressionErrors) {
-      (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)('Error when evaluating setter ' + '"' + this.expression + '": ' + e.toString(), this.vm);
+      (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)("Error when evaluating setter " + '"' + this.expression + '": ' + e.toString(), this.vm);
     }
   } // two-way sync for v-for alias
 
@@ -12700,7 +12704,7 @@ Watcher.prototype.set = function (value) {
 
   if (forContext && forContext.alias === this.expression) {
     if (forContext.filters) {
-       true && (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)('It seems you are using two-way binding on ' + 'a v-for alias (' + this.expression + '), and the ' + 'v-for has filters. This will not work properly. ' + 'Either remove the filters or use an array of ' + 'objects and bind to object properties instead.', this.vm);
+       true && (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.warn)("It seems you are using two-way binding on " + "a v-for alias (" + this.expression + "), and the " + "v-for has filters. This will not work properly. " + "Either remove the filters or use an array of " + "objects and bind to object properties instead.", this.vm);
       return;
     }
 
@@ -12766,6 +12770,7 @@ Watcher.prototype.afterGet = function () {
   this.deps = this.newDeps;
   this.newDeps = tmp;
   this.newDeps.length = 0;
+  console.log(this.deps);
 };
 /**
  * Subscriber interface.
@@ -12789,7 +12794,7 @@ Watcher.prototype.update = function (shallow) {
     /* istanbul ignore if */
 
     if ( true && _config__WEBPACK_IMPORTED_MODULE_0__.default.debug) {
-      this.prevError = new Error('[vue] async stack trace');
+      this.prevError = new Error("[vue] async stack trace");
     }
 
     (0,_batcher__WEBPACK_IMPORTED_MODULE_3__.pushWatcher)(this);
@@ -22676,7 +22681,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "44a48a2407aba097b8d4"
+/******/ 		__webpack_require__.h = () => "16e5a4dcec0d54fcf51a"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

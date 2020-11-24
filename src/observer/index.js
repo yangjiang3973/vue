@@ -35,7 +35,7 @@ export function Observer(value) {
   this.value = value;
   this.dep = new Dep();
   def(value, "__ob__", this);
-  //* NOTE: obviously, the different strategy for Array and Obj,
+  //* NOTE: obviously, there different strategy for Array and Obj,
   //* the do not share an observe function to observe changes.
   //* maybe this is why my array is under observed better than Vue(change by index I mean)
   if (isArray(value)) {
@@ -185,7 +185,6 @@ export function observe(value, vm) {
 
 export function defineReactive(obj, key, val) {
   var dep = new Dep();
-
   var property = Object.getOwnPropertyDescriptor(obj, key);
   if (property && property.configurable === false) {
     return;
@@ -202,8 +201,11 @@ export function defineReactive(obj, key, val) {
     get: function reactiveGetter() {
       var value = getter ? getter.call(obj) : val;
       if (Dep.target) {
+        console.log(0);
         dep.depend();
+        console.log(2);
         if (childOb) {
+          console.log(3);
           childOb.dep.depend();
         }
         if (isArray(value)) {

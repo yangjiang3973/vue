@@ -1,6 +1,6 @@
-import { toArray } from '../util/index'
+import { toArray } from "../util/index";
 
-let uid = 0
+let uid = 0;
 
 /**
  * A dep is an observable that can have multiple
@@ -9,15 +9,15 @@ let uid = 0
  * @constructor
  */
 
-export default function Dep () {
-  this.id = uid++
-  this.subs = []
+export default function Dep() {
+  this.id = uid++;
+  this.subs = [];
 }
 
 // the current target watcher being evaluated.
 // this is globally unique because there could be only one
 // watcher being evaluated at any time.
-Dep.target = null
+Dep.target = null;
 
 /**
  * Add a directive subscriber.
@@ -26,8 +26,8 @@ Dep.target = null
  */
 
 Dep.prototype.addSub = function (sub) {
-  this.subs.push(sub)
-}
+  this.subs.push(sub);
+};
 
 /**
  * Remove a directive subscriber.
@@ -36,16 +36,17 @@ Dep.prototype.addSub = function (sub) {
  */
 
 Dep.prototype.removeSub = function (sub) {
-  this.subs.$remove(sub)
-}
+  this.subs.$remove(sub);
+};
 
 /**
  * Add self as a dependency to the target watcher.
  */
 
 Dep.prototype.depend = function () {
-  Dep.target.addDep(this)
-}
+  console.log(1);
+  Dep.target.addDep(this);
+};
 
 /**
  * Notify all subscribers of a new value.
@@ -53,8 +54,8 @@ Dep.prototype.depend = function () {
 
 Dep.prototype.notify = function () {
   // stablize the subscriber list first
-  var subs = toArray(this.subs)
+  var subs = toArray(this.subs);
   for (var i = 0, l = subs.length; i < l; i++) {
-    subs[i].update()
+    subs[i].update();
   }
-}
+};
