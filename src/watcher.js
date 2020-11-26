@@ -36,7 +36,7 @@ let uid = 0;
 export default function Watcher(vm, expOrFn, cb, options) {
   // mix in options
   if (options) {
-    extend(this, options);
+    extend(this, options); //* NOTE: twoWay, deep, filters and other properties in options will copy from here
   }
   var isFn = typeof expOrFn === "function";
   this.vm = vm;
@@ -56,7 +56,7 @@ export default function Watcher(vm, expOrFn, cb, options) {
     this.getter = expOrFn;
     this.setter = undefined;
   } else {
-    var res = parseExpression(expOrFn, this.twoWay);
+    var res = parseExpression(expOrFn, this.twoWay); //* NOTE: if twoWay, need to generate setter.
     this.getter = res.get;
     this.setter = res.set;
   }
@@ -205,8 +205,6 @@ Watcher.prototype.afterGet = function () {
   this.deps = this.newDeps;
   this.newDeps = tmp;
   this.newDeps.length = 0;
-
-  console.log(this.deps);
 };
 
 /**

@@ -7,6 +7,7 @@
   \**********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -196,6 +197,7 @@ ansiHTML.reset()
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 2:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -8261,11 +8263,12 @@ var vm = new _index_js__WEBPACK_IMPORTED_MODULE_0__.default({
     // simpleArr: [1, 2, 3, 4, 5],
     // nestedArr: [1, [2, 3, 4], 5],
     // objArr: [{ a: 1 }, { b: 2 }, { c: 3 }],
-    a: {
-      b: {
-        c: 9
-      }
-    }
+    a: 0,
+    b: {
+      c: 2,
+      d: 4
+    },
+    c: "c"
   },
   // data: [1, 2, 3],  // data cannot be array, will show Vue warning
   //   computed: {
@@ -8583,7 +8586,6 @@ function withoutConversion(fn) {
 function Observer(value) {
   this.value = value;
   this.dep = new _dep__WEBPACK_IMPORTED_MODULE_0__.default();
-  console.log("4");
   (0,_util_index__WEBPACK_IMPORTED_MODULE_2__.def)(value, "__ob__", this); //* NOTE: obviously, there different strategy for Array and Obj,
   //* the do not share an observe function to observe changes.
   //* maybe this is why my array is under observed better than Vue(change by index I mean)
@@ -12603,7 +12605,7 @@ var uid = 0;
 function Watcher(vm, expOrFn, cb, options) {
   // mix in options
   if (options) {
-    (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.extend)(this, options);
+    (0,_util_index__WEBPACK_IMPORTED_MODULE_4__.extend)(this, options); //* NOTE: twoWay, deep, filters and other properties in options will copy from here
   }
 
   var isFn = typeof expOrFn === "function";
@@ -12629,7 +12631,8 @@ function Watcher(vm, expOrFn, cb, options) {
     this.getter = expOrFn;
     this.setter = undefined;
   } else {
-    var res = (0,_parsers_expression__WEBPACK_IMPORTED_MODULE_2__.parseExpression)(expOrFn, this.twoWay);
+    var res = (0,_parsers_expression__WEBPACK_IMPORTED_MODULE_2__.parseExpression)(expOrFn, this.twoWay); //* NOTE: if twoWay, need to generate setter.
+
     this.getter = res.get;
     this.setter = res.set;
   }
@@ -12770,7 +12773,6 @@ Watcher.prototype.afterGet = function () {
   this.deps = this.newDeps;
   this.newDeps = tmp;
   this.newDeps.length = 0;
-  console.log(this.deps);
 };
 /**
  * Subscriber interface.
@@ -12952,6 +12954,7 @@ function traverse(val, seen) {
   \*****************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 56:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -13888,6 +13891,7 @@ exports.XmlEntities = XmlEntities;
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: top-level-this-exports, __webpack_require__, __webpack_exports__, module */
+/*! CommonJS bailout: this is used directly at 16:2-6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
@@ -14174,6 +14178,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
   \***********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_exports__, module.loaded, module.id, module, __webpack_require__.nmd, top-level-this-exports, __webpack_require__.g, __webpack_require__, __webpack_require__.* */
+/*! CommonJS bailout: this is used directly at 530:2-6 */
+/*! CommonJS bailout: exports is used directly at 5:49-56 */
+/*! CommonJS bailout: exports is used directly at 6:23-30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* module decorator */ module = __webpack_require__.nmd(module);
@@ -14706,6 +14713,7 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/*! https://mths.be/punycode v1.3.2 by @mathia
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 31:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -14799,6 +14807,7 @@ module.exports = function(qs, sep, eq, options) {
   \***************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 40:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -14900,6 +14909,7 @@ exports.encode = exports.stringify = __webpack_require__(/*! ./encode */ "./node
   \************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__.g, __webpack_require__.* */
+/*! CommonJS bailout: module.exports is used directly at 2:72-86 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /* sockjs-client v1.4.0 | http://sockjs.org | MIT license */
@@ -20730,6 +20740,7 @@ module.exports = Url;
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 4:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -21500,6 +21511,7 @@ Url.prototype.parseHost = function() {
   \**********************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 3:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -21529,6 +21541,7 @@ module.exports = {
   \*************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 12:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -21566,6 +21579,7 @@ module.exports = /*#__PURE__*/function () {
   \***************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 32:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -21845,6 +21859,7 @@ socket(socketUrl, onSocketMessage);
   \**************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 117:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -21977,6 +21992,7 @@ module.exports = {
   \*************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_require__, module */
+/*! CommonJS bailout: module.exports is used directly at 52:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -22042,6 +22058,7 @@ module.exports = socket;
   \****************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 88:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -22142,6 +22159,7 @@ module.exports = createSocketUrl;
   \***********************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 22:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -22176,6 +22194,7 @@ module.exports = getCurrentScriptSource;
   \****************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: __webpack_require__, module */
+/*! CommonJS bailout: module.exports is used directly at 46:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -22237,6 +22256,7 @@ module.exports = {
   \**********************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 55:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
@@ -22304,6 +22324,7 @@ module.exports = reloadApp;
   \************************************************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 14:0-14 */
 /***/ ((module) => {
 
 "use strict";
@@ -22330,6 +22351,7 @@ module.exports = sendMsg;
   \************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 2:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var EventEmitter = __webpack_require__(/*! events */ "./node_modules/_events@3.2.0@events/events.js");
@@ -22344,6 +22366,7 @@ module.exports = new EventEmitter();
   \*********************************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module, __webpack_require__ */
+/*! CommonJS bailout: module.exports is used directly at 5:0-14 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 /*
@@ -22400,6 +22423,7 @@ module.exports = function (updatedModules, renewedModules) {
   \********************************************************/
 /*! unknown exports (runtime-defined) */
 /*! runtime requirements: module */
+/*! CommonJS bailout: module.exports is used directly at 21:0-14 */
 /***/ ((module) => {
 
 var logLevel = "info";
@@ -22681,7 +22705,7 @@ webpackContext.id = "./node_modules/webpack/hot sync ^\\.\\/log$";
 /******/ 	
 /******/ 	/* webpack/runtime/getFullHash */
 /******/ 	(() => {
-/******/ 		__webpack_require__.h = () => "16e5a4dcec0d54fcf51a"
+/******/ 		__webpack_require__.h = () => "083a39516f8b30309e47"
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/global */

@@ -54,11 +54,12 @@ let vm = new Vue({
     // simpleArr: [1, 2, 3, 4, 5],
     // nestedArr: [1, [2, 3, 4], 5],
     // objArr: [{ a: 1 }, { b: 2 }, { c: 3 }],
-    a: {
-      b: {
-        c: 9,
-      },
+    a: 0,
+    b: {
+      c: 2,
+      d: 4,
     },
+    c: "c",
   },
   // data: [1, 2, 3],  // data cannot be array, will show Vue warning
   //   computed: {
