@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "1b98c12b846c05d46031";
+/******/ 	var hotCurrentHash = "b372c1a7a237f2fdb02c";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -14036,8 +14036,10 @@ function lifecycleMixin(Vue
       }
     }
 
-    callHook(vm, 'beforeMount');
-    vm._watcher = new _observer_watcher__WEBPACK_IMPORTED_MODULE_0__["default"](vm, function () {
+    callHook(vm, 'beforeMount'); //* NOTE: this is the key point
+
+    vm._watcher = new _observer_watcher__WEBPACK_IMPORTED_MODULE_0__["default"](vm, // pass a fn to watcher. vm._render() will run first, then vm._update().  vm._render() is from file render.js
+    function () {
       vm._update(vm._render(), hydrating);
     }, _util_index__WEBPACK_IMPORTED_MODULE_3__["noop"]);
     hydrating = false; // root instance, call mounted on self
@@ -14348,6 +14350,8 @@ function renderMixin(Vue
     var vnode;
 
     try {
+      //* NOTE:
+      console.log(render);
       vnode = render.call(vm._renderProxy, vm.$createElement);
     } catch (e) {
       if (true) {
@@ -17762,7 +17766,8 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   }
 
   return map;
-}
+} //* NOTE: actual __patch__ function
+
 
 function createPatchFunction(backend) {
   var i, j;
@@ -18202,7 +18207,8 @@ function createPatchFunction(backend) {
     } else {
       return Object(_util_index__WEBPACK_IMPORTED_MODULE_2__["_toString"])(vnode.text) === node.data;
     }
-  }
+  } //* NOTE: this is the actual patch function
+
 
   return function patch(oldVnode, vnode, hydrating, removeOnly) {
     var elm, parent;
@@ -20616,7 +20622,7 @@ var patch
 = Object(core_vdom_patch__WEBPACK_IMPORTED_MODULE_1__["createPatchFunction"])({
   nodeOps: web_runtime_node_ops__WEBPACK_IMPORTED_MODULE_0__,
   modules: modules
-});
+}); // return patch function and assign to patch
 
 /***/ }),
 
