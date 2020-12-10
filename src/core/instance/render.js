@@ -59,9 +59,10 @@ export function renderMixin(Vue: Class<Component>) {
         // render self
         let vnode;
         try {
-            //* NOTE:
+            //* NOTE:  vm.render(createElement)
             console.log(render);
             vnode = render.call(vm._renderProxy, vm.$createElement);
+            console.log(vnode);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') {
                 warn(`Error when rendering ${formatComponentName(vm)}:`);

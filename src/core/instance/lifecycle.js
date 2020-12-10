@@ -39,7 +39,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
         hydrating?: boolean
     ): Component {
         const vm: Component = this;
-        vm.$el = el;
+        vm.$el = el; //* already a dom element, not just a string for query
         if (!vm.$options.render) {
             vm.$options.render = emptyVNode;
             if (process.env.NODE_ENV !== 'production') {
@@ -63,7 +63,7 @@ export function lifecycleMixin(Vue: Class<Component>) {
         //* NOTE: this is the key point
         vm._watcher = new Watcher(
             vm,
-            // pass a fn to watcher. vm._render() will run first, then vm._update().  vm._render() is from file render.js
+            //* pass a fn to watcher. vm._render() will run first, then vm._update().  vm._render() is from file render.js
             () => {
                 vm._update(vm._render(), hydrating);
             },

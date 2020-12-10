@@ -43,7 +43,7 @@ export function initMixin(Vue: Class<Component>) {
         callHook(vm, 'beforeCreate');
         initState(vm);
         callHook(vm, 'created');
-        initRender(vm);
+        initRender(vm); //* NOTE: call vm.$mount() here!!
     };
 
     //* will not used now

@@ -130,7 +130,9 @@ export function createPatchFunction(backend) {
                 ? nodeOps.createElementNS(vnode.ns, tag)
                 : nodeOps.createElement(tag);
             setScope(vnode);
+
             createChildren(vnode, children, insertedVnodeQueue);
+
             if (isDef(data)) {
                 invokeCreateHooks(vnode, insertedVnodeQueue);
             }
@@ -608,7 +610,7 @@ export function createPatchFunction(backend) {
                     }
                     // either not server-rendered, or hydration failed.
                     // create an empty node and replace it
-                    oldVnode = emptyNodeAt(oldVnode);
+                    oldVnode = emptyNodeAt(oldVnode); //* NOTE: come here
                 }
                 elm = oldVnode.elm;
                 parent = nodeOps.parentNode(elm);
@@ -625,7 +627,7 @@ export function createPatchFunction(backend) {
                         }
                     }
                 }
-
+                //* NOTE: will come here
                 if (parent !== null) {
                     nodeOps.insertBefore(
                         parent,
