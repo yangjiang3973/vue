@@ -18,7 +18,7 @@ export default {
                     <li>
                         <a
                             href="#"
-                            vOn:click={() => this.chooseFilter('all')}
+                            onClick={() => this.chooseFilter('all')}
                             class={{ selected: this.filter === 'all' }}
                         >
                             All
@@ -27,7 +27,7 @@ export default {
                     <li>
                         <a
                             href="#"
-                            vOn:click={() => this.chooseFilter('active')}
+                            onClick={() => this.chooseFilter('active')}
                             class={{ selected: this.filter === 'active' }}
                         >
                             Active
@@ -36,7 +36,7 @@ export default {
                     <li>
                         <a
                             href="#"
-                            vOn:click={() => this.chooseFilter('completed')}
+                            onClick={() => this.chooseFilter('completed')}
                             class={{
                                 selected: this.filter === 'completed',
                             }}
