@@ -46,7 +46,7 @@ export function initMixin(Vue: Class<Component>) {
         initRender(vm); //* NOTE: call vm.$mount() here!!
     };
 
-    //* will not used now
+    //* use for component
     function initInternalComponent(
         vm: Component,
         options: InternalComponentOptions

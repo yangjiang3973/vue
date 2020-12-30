@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "9108f34b2a3572844fda";
+/******/ 	var hotCurrentHash = "83f366fba81d65748006";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -12108,7 +12108,7 @@ function initMixin(Vue
     Object(_state__WEBPACK_IMPORTED_MODULE_1__["initState"])(vm);
     Object(_lifecycle__WEBPACK_IMPORTED_MODULE_4__["callHook"])(vm, 'created');
     Object(_render__WEBPACK_IMPORTED_MODULE_2__["initRender"])(vm); //* NOTE: call vm.$mount() here!!
-  }; //* will not used now
+  }; //* use for component
 
 
   function initInternalComponent(vm
