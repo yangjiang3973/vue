@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "83f366fba81d65748006";
+/******/ 	var hotCurrentHash = "3b468e8bdd118187e995";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -12276,12 +12276,14 @@ function lifecycleMixin(Vue
     var vm
     /*: Component*/
     = this;
+    console.log(vm);
 
     if (vm._isMounted) {
       callHook(vm, 'beforeUpdate');
     }
 
-    var prevEl = vm.$el;
+    var prevEl = vm.$el; //* NOTE: in _update, it will update activeInstance(i.e. vm)
+
     var prevActiveInstance = activeInstance;
     activeInstance = vm;
     var prevVnode = vm._vnode;

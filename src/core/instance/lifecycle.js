@@ -81,10 +81,12 @@ export function lifecycleMixin(Vue: Class<Component>) {
 
     Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
         const vm: Component = this;
+        console.log(vm);
         if (vm._isMounted) {
             callHook(vm, 'beforeUpdate');
         }
         const prevEl = vm.$el;
+        //* NOTE: in _update, it will update activeInstance(i.e. vm)
         const prevActiveInstance = activeInstance;
         activeInstance = vm;
         const prevVnode = vm._vnode;
