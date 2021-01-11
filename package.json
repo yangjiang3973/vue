@@ -30,6 +30,7 @@
     "@vue/babel-preset-jsx": "^1.2.4",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^6.4.0",
     "html-webpack-plugin": "^4.5.0",
     "jasmine-core": "^3.6.0",
     "karma": "^5.2.3",

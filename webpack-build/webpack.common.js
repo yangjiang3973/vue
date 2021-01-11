@@ -1,9 +1,10 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './demo/todoApp/main.js',
+    entry: './demo/modal/main.js',
     output: {
         path: path.resolve(__dirname, '../dist'),
         filename: 'mini-vue.js',
@@ -46,5 +47,13 @@ module.exports = {
             title: 'Output Management',
             template: path.resolve(__dirname, '../index.html'),
         }), // generate html
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, '../demo/modal/style.css'),
+                    to: path.resolve(__dirname, '../dist/'),
+                },
+            ],
+        }),
     ],
 };

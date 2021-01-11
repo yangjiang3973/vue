@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "3b468e8bdd118187e995";
+/******/ 	var hotCurrentHash = "5ad2dea9c548bcd20854";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -859,346 +859,85 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./demo/todoApp/footer.js":
-/*!********************************!*\
-  !*** ./demo/todoApp/footer.js ***!
-  \********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['todos', 'filter', 'chooseFilter'],
-  computed: {
-    remaining: function remaining() {
-      return this.todos.filter(function (todo) {
-        return !todo.done;
-      }).length;
-    }
-  },
-  render: function render() {
-    var _this = this;
-
-    var h = arguments[0];
-    return h("footer", {
-      "class": "footer"
-    }, [h("span", {
-      "class": "todo-count"
-    }, [this.remaining, " ", this.remaining > 1 ? 'items' : 'item', ' ', "left"]), h("ul", {
-      "class": "filters"
-    }, [h("li", [h("a", {
-      "attrs": {
-        "href": "#"
-      },
-      "on": {
-        "click": function click() {
-          return _this.chooseFilter('all');
-        }
-      },
-      "class": {
-        selected: this.filter === 'all'
-      }
-    }, ["All"])]), h("li", [h("a", {
-      "attrs": {
-        "href": "#"
-      },
-      "on": {
-        "click": function click() {
-          return _this.chooseFilter('active');
-        }
-      },
-      "class": {
-        selected: this.filter === 'active'
-      }
-    }, ["Active"])]), h("li", [h("a", {
-      "attrs": {
-        "href": "#"
-      },
-      "on": {
-        "click": function click() {
-          return _this.chooseFilter('completed');
-        }
-      },
-      "class": {
-        selected: this.filter === 'completed'
-      }
-    }, ["Completed"])])])]);
-  }
-});
-
-/***/ }),
-
-/***/ "./demo/todoApp/header.js":
-/*!********************************!*\
-  !*** ./demo/todoApp/header.js ***!
-  \********************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['addTodo', 'todos'],
-  data: function data() {
-    return {
-      title: 'Todo App'
-    };
-  },
-  methods: {
-    inputTodo: function inputTodo(e) {
-      if (e.code === 'Enter' && e.target.value) {
-        this.addTodo(e.target.value);
-        e.target.value = '';
-      }
-    }
-  },
-  render: function render() {
-    var h = arguments[0];
-    return h("header", {
-      "class": "header"
-    }, [h("h1", [this.title]), h("input", {
-      "class": "new-todo",
-      "attrs": {
-        "autofocus": true,
-        "autocomplete": "off",
-        "type": "text",
-        "placeholder": "What needs to be done?"
-      },
-      "on": {
-        "keyup": this.inputTodo
-      }
-    })]);
-  }
-});
-
-/***/ }),
-
-/***/ "./demo/todoApp/list.js":
-/*!******************************!*\
-  !*** ./demo/todoApp/list.js ***!
-  \******************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @vue/babel-helper-vue-jsx-merge-props */ "./node_modules/_@vue_babel-helper-vue-jsx-merge-props@1.2.1@@vue/babel-helper-vue-jsx-merge-props/dist/helper.js");
-/* harmony import */ var _vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0__);
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['todos', 'filter'],
-  data: function data() {
-    return {
-      editedTodo: null
-    };
-  },
-  computed: {
-    filteredTodos: function filteredTodos() {
-      var _this = this;
-
-      return this.todos.filter(function (todo) {
-        if (_this.filter === 'active' && todo.done === false) return true;else if (_this.filter === 'completed' && todo.done === true) return true;else if (_this.filter === 'all') return true;
-      });
-    }
-  },
-  methods: {
-    changeState: function changeState(e, todo) {
-      todo.done = e.target.checked;
-    },
-    removeTodo: function removeTodo(todo) {
-      this.todos.splice(this.todos.indexOf(todo), 1);
-    },
-    editTodo: function editTodo(todo) {
-      var _this2 = this;
-
-      this.editedTodo = todo;
-      this.$refs["inputEdit-".concat(todo.id)];
-      setTimeout(function () {
-        return _this2.$refs["inputEdit-".concat(todo.id)].focus();
-      }, 0); // this.$refs.inputEdit.focus();
-    },
-    completeEdit: function completeEdit(e, todo, save) {
-      if (!this.editedTodo) return;
-
-      if (!e.target.value && save) {
-        this.removeTodo(todo);
-      } else if (save) {
-        todo.text = e.target.value;
-      }
-
-      this.editedTodo = null;
-      this.$refs["inputEdit-".concat(todo.id)].blur();
-    },
-    editControl: function editControl(e, todo) {
-      if (e.code === 'Enter') {
-        this.completeEdit(e, todo, true);
-      } else if (e.code === 'Escape') {
-        this.completeEdit(e, todo, false);
-      }
-    }
-  },
-  render: function render() {
-    var _this3 = this;
-
-    var h = arguments[0];
-    return h("section", {
-      "class": "main"
-    }, [h("ul", {
-      "class": "todo-list"
-    }, [this.filteredTodos.map(function (todo) {
-      return h("li", {
-        "class": {
-          todo: true,
-          completed: todo.done,
-          editing: todo === _this3.editedTodo
-        },
-        "key": todo.id
-      }, [h("div", {
-        "class": "view"
-      }, [h("input", _vue_babel_helper_vue_jsx_merge_props__WEBPACK_IMPORTED_MODULE_0___default()([{
-        "on": {
-          "change": function change($event) {
-            var $$a = todo.done,
-                $$el = $event.target,
-                $$c = $$el.checked ? true : false;
-
-            if (Array.isArray($$a)) {
-              var $$v = null,
-                  $$i = _this3._i($$a, $$v);
-
-              if ($$el.checked) {
-                $$i < 0 && _this3.$set(todo, "done", $$a.concat([$$v]));
-              } else {
-                $$i > -1 && _this3.$set(todo, "done", $$a.slice(0, $$i).concat($$a.slice($$i + 1)));
-              }
-            } else {
-              _this3.$set(todo, "done", $$c);
-            }
-          }
-        },
-        "attrs": {
-          "type": "checkbox"
-        },
-        "class": "toggle",
-        "domProps": {
-          "checked": Array.isArray(todo.done) ? _this3._i(todo.done, null) > -1 : todo.done
-        }
-      }, {
-        directives: [{
-          name: "model",
-          value: todo.done,
-          modifiers: {}
-        }]
-      }])), h("label", {
-        "on": {
-          "dblclick": function dblclick() {
-            return _this3.editTodo(todo);
-          }
-        }
-      }, [todo.text]), h("button", {
-        "class": "destroy",
-        "on": {
-          "click": function click() {
-            return _this3.removeTodo(todo);
-          }
-        }
-      })]), h("input", {
-        "attrs": {
-          "type": "text"
-        },
-        "class": "edit",
-        "ref": "inputEdit-".concat(todo.id),
-        "domProps": {
-          "value": todo.text
-        },
-        "on": {
-          "blur": function blur(e) {
-            return _this3.completeEdit(e, todo, true);
-          },
-          "keyup": function keyup(e) {
-            return _this3.editControl(e, todo);
-          }
-        }
-      })]);
-    })])]);
-  }
-});
-
-/***/ }),
-
-/***/ "./demo/todoApp/main.js":
-/*!******************************!*\
-  !*** ./demo/todoApp/main.js ***!
-  \******************************/
+/***/ "./demo/modal/main.js":
+/*!****************************!*\
+  !*** ./demo/modal/main.js ***!
+  \****************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../src/entries/web-runtime */ "./src/entries/web-runtime.js");
-/* harmony import */ var _header__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./header */ "./demo/todoApp/header.js");
-/* harmony import */ var _list__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./list */ "./demo/todoApp/list.js");
-/* harmony import */ var _footer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./footer */ "./demo/todoApp/footer.js");
-// import Vue from 'vue';
-
-
+/* harmony import */ var _modalComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modalComponent */ "./demo/modal/modalComponent.js");
 
 
 var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
   el: '#app',
   data: {
-    todos: [],
-    filter: 'all'
+    showModal: false
   },
-  methods: {
-    addTodo: function addTodo(newTodoText) {
-      var newTodo = {
-        id: this.todos.length,
-        text: newTodoText,
-        done: false
-      };
-      this.todos.push(newTodo);
-    },
-    chooseFilter: function chooseFilter(filter) {
-      this.filter = filter;
-    }
-  },
-  render: function render(h) {
-    return h("section", {
-      "class": "todoapp"
-    }, [h(_header__WEBPACK_IMPORTED_MODULE_1__["default"], {
+  render: function render() {
+    var _this = this;
+
+    var h = arguments[0];
+    return h("div", [h("button", {
       "attrs": {
-        "todos": this.todos,
-        "addTodo": this.addTodo
+        "id": "show-modal"
+      },
+      "on": {
+        "click": function click() {
+          _this.showModal = true;
+        }
       }
-    }), h(_list__WEBPACK_IMPORTED_MODULE_2__["default"], {
-      "attrs": {
-        "todos": this.todos,
-        "filter": this.filter
+    }, ["Show Modal"]), this.showModal ? h(_modalComponent__WEBPACK_IMPORTED_MODULE_1__["default"], {
+      "on": {
+        "close": function close() {
+          _this.showModal = false;
+        }
       }
-    }), h(_footer__WEBPACK_IMPORTED_MODULE_3__["default"], {
-      "attrs": {
-        "todos": this.todos,
-        "filter": this.filter,
-        "chooseFilter": this.chooseFilter
-      }
-    })]);
+    }, [h("h3", ["custom header"])]) : '']);
   }
 });
 
 /***/ }),
 
-/***/ "./node_modules/_@vue_babel-helper-vue-jsx-merge-props@1.2.1@@vue/babel-helper-vue-jsx-merge-props/dist/helper.js":
-/*!************************************************************************************************************************!*\
-  !*** ./node_modules/_@vue_babel-helper-vue-jsx-merge-props@1.2.1@@vue/babel-helper-vue-jsx-merge-props/dist/helper.js ***!
-  \************************************************************************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ "./demo/modal/modalComponent.js":
+/*!**************************************!*\
+  !*** ./demo/modal/modalComponent.js ***!
+  \**************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-function _extends(){return _extends=Object.assign||function(a){for(var b,c=1;c<arguments.length;c++)for(var d in b=arguments[c],b)Object.prototype.hasOwnProperty.call(b,d)&&(a[d]=b[d]);return a},_extends.apply(this,arguments)}var normalMerge=["attrs","props","domProps"],toArrayMerge=["class","style","directives"],functionalMerge=["on","nativeOn"],mergeJsxProps=function(a){return a.reduce(function(c,a){for(var b in a)if(!c[b])c[b]=a[b];else if(-1!==normalMerge.indexOf(b))c[b]=_extends({},c[b],a[b]);else if(-1!==toArrayMerge.indexOf(b)){var d=c[b]instanceof Array?c[b]:[c[b]],e=a[b]instanceof Array?a[b]:[a[b]];c[b]=d.concat(e)}else if(-1!==functionalMerge.indexOf(b)){for(var f in a[b])if(c[b][f]){var g=c[b][f]instanceof Array?c[b][f]:[c[b][f]],h=a[b][f]instanceof Array?a[b][f]:[a[b][f]];c[b][f]=g.concat(h)}else c[b][f]=a[b][f];}else if("hook"==b)for(var i in a[b])c[b][i]=c[b][i]?mergeFn(c[b][i],a[b][i]):a[b][i];else c[b]=a[b];return c},{})},mergeFn=function(a,b){return function(){a&&a.apply(this,arguments),b&&b.apply(this,arguments)}};module.exports=mergeJsxProps;
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: [],
+  render: function render() {
+    var _this = this;
 
+    var h = arguments[0];
+    return (// <transition name="modal">
+      h("div", {
+        "class": "modal-mask"
+      }, [h("div", {
+        "class": "modal-wrapper"
+      }, [h("div", {
+        "class": "modal-container"
+      }, [h("div", {
+        "class": "modal-footer"
+      }, [h("slot", ["default footer", h("button", {
+        "class": "modal-default-button",
+        "on": {
+          "click": function click() {
+            return _this.$emit('close');
+          }
+        }
+      }, ["OK"])])])])])]) // </transition>
+
+    );
+  }
+});
 
 /***/ }),
 
@@ -13238,14 +12977,14 @@ function popTarget() {
 /*!************************************!*\
   !*** ./src/core/observer/index.js ***!
   \************************************/
-/*! exports provided: observerState, Observer, observe, defineReactive, set, del */
+/*! exports provided: observerState, observe, Observer, defineReactive, set, del */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "observerState", function() { return observerState; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Observer", function() { return Observer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "observe", function() { return observe; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Observer", function() { return Observer; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "defineReactive", function() { return defineReactive; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "set", function() { return set; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "del", function() { return del; });
@@ -13266,7 +13005,40 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
 
-var arrayKeys = Object.getOwnPropertyNames(_array__WEBPACK_IMPORTED_MODULE_2__["arrayMethods"]);
+var arrayKeys = Object.getOwnPropertyNames(_array__WEBPACK_IMPORTED_MODULE_2__["arrayMethods"]); // helpers
+
+/**
+ * Augment an target Object or Array by intercepting
+ * the prototype chain using __proto__
+ */
+
+function protoAugment(target, src
+/*: Object*/
+) {
+  /* eslint-disable no-proto */
+  target.__proto__ = src;
+  /* eslint-enable no-proto */
+}
+/**
+ * Augment an target Object or Array by defining
+ * hidden properties.
+ *
+ * istanbul ignore next
+ */
+
+
+function copyAugment(target
+/*: Object*/
+, src
+/*: Object*/
+, keys
+/*: Array<string>*/
+) {
+  for (var i = 0, l = keys.length; i < l; i++) {
+    var key = keys[i];
+    Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["def"])(target, key, src[key]);
+  }
+}
 /**
  * By default, when a reactive property is set, the new value is
  * also converted to become reactive. However when passing down props,
@@ -13274,10 +13046,38 @@ var arrayKeys = Object.getOwnPropertyNames(_array__WEBPACK_IMPORTED_MODULE_2__["
  * under a frozen data structure. Converting it would defeat the optimization.
  */
 
+
 var observerState = {
   shouldConvert: true,
   isSettingProps: false
 };
+/**
+ * Attempt to create an observer instance for a value,
+ * returns the new observer if successfully observed,
+ * or the existing observer if the value already has one.
+ */
+
+function observe(value
+/*: any*/
+)
+/*: Observer | void*/
+{
+  if (!Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["isObject"])(value)) {
+    return;
+  }
+
+  var ob
+  /*: Observer | void*/
+  ;
+
+  if (Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["hasOwn"])(value, '__ob__') && value.__ob__ instanceof Observer) {
+    ob = value.__ob__;
+  } else if (observerState.shouldConvert && !_config__WEBPACK_IMPORTED_MODULE_0__["default"]._isServer && (Array.isArray(value) || Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["isPlainObject"])(value)) && Object.isExtensible(value) && !value._isVue) {
+    ob = new Observer(value);
+  }
+
+  return ob;
+}
 /**
  * Observer class that are attached to each observed
  * object. Once attached, the observer converts target
@@ -13345,68 +13145,7 @@ var Observer = /*#__PURE__*/function () {
   }]);
 
   return Observer;
-}(); // helpers
-
-/**
- * Augment an target Object or Array by intercepting
- * the prototype chain using __proto__
- */
-
-function protoAugment(target, src
-/*: Object*/
-) {
-  /* eslint-disable no-proto */
-  target.__proto__ = src;
-  /* eslint-enable no-proto */
-}
-/**
- * Augment an target Object or Array by defining
- * hidden properties.
- *
- * istanbul ignore next
- */
-
-
-function copyAugment(target
-/*: Object*/
-, src
-/*: Object*/
-, keys
-/*: Array<string>*/
-) {
-  for (var i = 0, l = keys.length; i < l; i++) {
-    var key = keys[i];
-    Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["def"])(target, key, src[key]);
-  }
-}
-/**
- * Attempt to create an observer instance for a value,
- * returns the new observer if successfully observed,
- * or the existing observer if the value already has one.
- */
-
-
-function observe(value
-/*: any*/
-)
-/*: Observer | void*/
-{
-  if (!Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["isObject"])(value)) {
-    return;
-  }
-
-  var ob
-  /*: Observer | void*/
-  ;
-
-  if (Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["hasOwn"])(value, '__ob__') && value.__ob__ instanceof Observer) {
-    ob = value.__ob__;
-  } else if (observerState.shouldConvert && !_config__WEBPACK_IMPORTED_MODULE_0__["default"]._isServer && (Array.isArray(value) || Object(_util_index__WEBPACK_IMPORTED_MODULE_3__["isPlainObject"])(value)) && Object.isExtensible(value) && !value._isVue) {
-    ob = new Observer(value);
-  }
-
-  return ob;
-}
+}();
 /**
  * Define a reactive property on an Object.
  */
@@ -15639,7 +15378,8 @@ function mergeVNodeHook(def
   } else {
     def[key] = hook;
   }
-}
+} //* updateListeners(listeners, oldListeners || {}, on, off);
+
 function updateListeners(on
 /*: Object*/
 , oldOn
@@ -19170,15 +18910,15 @@ function looseIndexOf(arr
 /***/ }),
 
 /***/ 0:
-/*!*************************************************************************************************************************************************************!*\
-  !*** multi ./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client?http://0.0.0.0:8080 (webpack)/hot/only-dev-server.js ./demo/todoApp/main.js ***!
-  \*************************************************************************************************************************************************************/
+/*!***********************************************************************************************************************************************************!*\
+  !*** multi ./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client?http://0.0.0.0:8080 (webpack)/hot/only-dev-server.js ./demo/modal/main.js ***!
+  \***********************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! /Users/yangjiang/dev/learn/vue/node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client/index.js?http://0.0.0.0:8080 */"./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client/index.js?http://0.0.0.0:8080");
 __webpack_require__(/*! /Users/yangjiang/dev/learn/vue/node_modules/_webpack@4.44.2@webpack/hot/only-dev-server.js */"./node_modules/_webpack@4.44.2@webpack/hot/only-dev-server.js");
-module.exports = __webpack_require__(/*! ./demo/todoApp/main.js */"./demo/todoApp/main.js");
+module.exports = __webpack_require__(/*! ./demo/modal/main.js */"./demo/modal/main.js");
 
 
 /***/ })
