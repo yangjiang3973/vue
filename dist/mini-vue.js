@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "f283650190d0a73e1a5f";
+/******/ 	var hotCurrentHash = "eb97cea11222ec446050";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -896,13 +896,7 @@ var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
           _this.showModal = false;
         }
       }
-    }, [h("h3", {
-      "slot": "header"
-    }, ["custom header"]), h("div", {
-      "slot": "body"
-    }, ["this is the main body"]), h("div", {
-      "slot": "footer"
-    }, ["this is the footer"])]) : '']);
+    }) : '']);
   }
 });
 
@@ -923,6 +917,7 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     var h = arguments[0];
+    console.log(this.$slots);
     return (// <transition name="modal">
       h("div", {
         "class": "modal-mask"

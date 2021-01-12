@@ -1,6 +1,7 @@
 export default {
     props: [],
     render() {
+        console.log(this.$slots);
         return (
             // <transition name="modal">
             <div class="modal-mask">
