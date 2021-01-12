@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "eb97cea11222ec446050";
+/******/ 	var hotCurrentHash = "97a4c3dc59c451cf1aac";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -896,7 +896,17 @@ var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
           _this.showModal = false;
         }
       }
-    }) : '']);
+    }, [h("h3", {
+      "slot": "header"
+    }, ["custom header1"]), h("h3", {
+      "slot": "header"
+    }, ["custom header2"]), h("h3", {
+      "slot": "header"
+    }, ["custom header3"]), h("div", {
+      "slot": "body"
+    }, ["this is the main body"]), h("div", {
+      "slot": "footer"
+    }, ["this is the footer"])]) : '']);
   }
 });
 

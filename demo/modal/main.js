@@ -24,9 +24,11 @@ let vm = new Vue({
                             this.showModal = false;
                         }}
                     >
-                        {/* <h3 slot="header">custom header</h3>
+                        <h3 slot="header">custom header1</h3>
+                        <h3 slot="header">custom header2</h3>
+                        <h3 slot="header">custom header3</h3>
                         <div slot="body">this is the main body</div>
-                        <div slot="footer">this is the footer</div> */}
+                        <div slot="footer">this is the footer</div>
                     </Modal>
                 ) : (
                     ''
