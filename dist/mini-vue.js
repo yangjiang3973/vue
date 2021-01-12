@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "5ad2dea9c548bcd20854";
+/******/ 	var hotCurrentHash = "1c2b13dfb8327e45532d";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -896,7 +896,13 @@ var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
           _this.showModal = false;
         }
       }
-    }, [h("h3", ["custom header"])]) : '']);
+    }, [h("h3", {
+      "slot": "header"
+    }, ["custom header"]), h("div", {
+      "slot": "body"
+    }, ["this is the main body"]), h("div", {
+      "slot": "footer"
+    }, ["this is the footer"])]) : '']);
   }
 });
 
@@ -925,15 +931,19 @@ __webpack_require__.r(__webpack_exports__);
       }, [h("div", {
         "class": "modal-container"
       }, [h("div", {
+        "class": "modal-header"
+      }, [this.$slots.header]), h("div", {
+        "class": "modal-body"
+      }, [this.$slots.body]), h("div", {
         "class": "modal-footer"
-      }, [h("slot", ["default footer", h("button", {
+      }, [this.$slots.footer, h("button", {
         "class": "modal-default-button",
         "on": {
           "click": function click() {
             return _this.$emit('close');
           }
         }
-      }, ["OK"])])])])])]) // </transition>
+      }, ["OK"])])])])]) // </transition>
 
     );
   }
