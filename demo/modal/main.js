@@ -1,4 +1,5 @@
 import Vue from "../../src/platforms/web/entry-runtime";
+
 import Modal from "./modalComponent";
 
 let vm = new Vue({
@@ -23,8 +24,21 @@ let vm = new Vue({
             onClose={() => {
               this.showModal = false;
             }}
+            scopedSlots={{
+              header: (props) => {
+                // return <span>{props.title}</span>;
+                return props.title;
+              },
+            }}
           >
-            <h3 slot="header">custom header</h3>
+            {/* <h3 slot="header">custom header</h3> */}
+            {/* <h3
+              scopedSlots={{
+                header: (props) => {
+                  return <span>{props.title}</span>;
+                },
+              }}
+            ></h3> */}
             <div slot="body">this is the main body</div>
             <div slot="footer">this is the footer</div>
           </Modal>
