@@ -63,7 +63,7 @@
 /******/
 /******/ 	var hotApplyOnUpdate = true;
 /******/ 	// eslint-disable-next-line no-unused-vars
-/******/ 	var hotCurrentHash = "97a4c3dc59c451cf1aac";
+/******/ 	var hotCurrentHash = "19dab036adac1bea4924";
 /******/ 	var hotRequestTimeout = 10000;
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentChildModule;
@@ -859,18 +859,16 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./demo/modal/main.js":
-/*!****************************!*\
-  !*** ./demo/modal/main.js ***!
-  \****************************/
+/***/ "./demo/transition/main.js":
+/*!*********************************!*\
+  !*** ./demo/transition/main.js ***!
+  \*********************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../src/entries/web-runtime */ "./src/entries/web-runtime.js");
-/* harmony import */ var _modalComponent__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modalComponent */ "./demo/modal/modalComponent.js");
-
 
 var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
   el: '#app',
@@ -887,70 +885,14 @@ var vm = new _src_entries_web_runtime__WEBPACK_IMPORTED_MODULE_0__["default"]({
       },
       "on": {
         "click": function click() {
-          _this.showModal = true;
+          _this.showModal = !_this.showModal;
         }
       }
-    }, ["Show Modal"]), this.showModal ? h(_modalComponent__WEBPACK_IMPORTED_MODULE_1__["default"], {
-      "on": {
-        "close": function close() {
-          _this.showModal = false;
-        }
+    }, ["Show Modal"]), h("transition", {
+      "attrs": {
+        "name": "fade"
       }
-    }, [h("h3", {
-      "slot": "header"
-    }, ["custom header1"]), h("h3", {
-      "slot": "header"
-    }, ["custom header2"]), h("h3", {
-      "slot": "header"
-    }, ["custom header3"]), h("div", {
-      "slot": "body"
-    }, ["this is the main body"]), h("div", {
-      "slot": "footer"
-    }, ["this is the footer"])]) : '']);
-  }
-});
-
-/***/ }),
-
-/***/ "./demo/modal/modalComponent.js":
-/*!**************************************!*\
-  !*** ./demo/modal/modalComponent.js ***!
-  \**************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ({
-  props: [],
-  render: function render() {
-    var _this = this;
-
-    var h = arguments[0];
-    console.log(this.$slots);
-    return (// <transition name="modal">
-      h("div", {
-        "class": "modal-mask"
-      }, [h("div", {
-        "class": "modal-wrapper"
-      }, [h("div", {
-        "class": "modal-container"
-      }, [h("div", {
-        "class": "modal-header"
-      }, [this.$slots.header]), h("div", {
-        "class": "modal-body"
-      }, [this.$slots.body]), h("div", {
-        "class": "modal-footer"
-      }, [this.$slots.footer, h("button", {
-        "class": "modal-default-button",
-        "on": {
-          "click": function click() {
-            return _this.$emit('close');
-          }
-        }
-      }, ["OK"])])])])]) // </transition>
-
-    );
+    }, [this.showModal ? h("p", ["hello"]) : null])]);
   }
 });
 
@@ -14888,7 +14830,8 @@ function createComponent(Ctor
 
   data = data || {}; // extract props
 
-  var propsData = extractProps(data, Ctor); // functional component
+  var propsData = extractProps(data, Ctor);
+  console.log('🚀 ~ file: create-component.js ~ line 58 ~ propsData', propsData); // functional component
 
   if (Ctor.options.functional) {
     return createFunctionalComponent(Ctor, propsData, data, context, children);
@@ -15747,6 +15690,7 @@ function createPatchFunction(backend) {
   var cbs = {};
   var modules = backend.modules,
       nodeOps = backend.nodeOps;
+  console.log('🚀 ~ file: patch.js ~ line 58 ~ createPatchFunction ~ modules', modules);
 
   for (i = 0; i < hooks.length; ++i) {
     cbs[hooks[i]] = [];
@@ -16861,7 +16805,8 @@ function hasParentTransition(vnode) {
     }
 
     child.key = child.key == null || child.isStatic ? "__v".concat(child.tag + this._uid, "__") : child.key;
-    var data = (child.data || (child.data = {})).transition = extractTransitionData(this);
+    var data = (child.data || (child.data = {})).transition = extractTransitionData(this); //* data={name: modal}, child.data.transition = {name: modal}
+
     var oldRawChild = this._vnode;
     var oldChild
     /*: any*/
@@ -18925,15 +18870,15 @@ function looseIndexOf(arr
 /***/ }),
 
 /***/ 0:
-/*!***********************************************************************************************************************************************************!*\
-  !*** multi ./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client?http://0.0.0.0:8080 (webpack)/hot/only-dev-server.js ./demo/modal/main.js ***!
-  \***********************************************************************************************************************************************************/
+/*!****************************************************************************************************************************************************************!*\
+  !*** multi ./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client?http://0.0.0.0:8080 (webpack)/hot/only-dev-server.js ./demo/transition/main.js ***!
+  \****************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! /Users/yangjiang/dev/learn/vue/node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client/index.js?http://0.0.0.0:8080 */"./node_modules/_webpack-dev-server@3.11.0@webpack-dev-server/client/index.js?http://0.0.0.0:8080");
 __webpack_require__(/*! /Users/yangjiang/dev/learn/vue/node_modules/_webpack@4.44.2@webpack/hot/only-dev-server.js */"./node_modules/_webpack@4.44.2@webpack/hot/only-dev-server.js");
-module.exports = __webpack_require__(/*! ./demo/modal/main.js */"./demo/modal/main.js");
+module.exports = __webpack_require__(/*! ./demo/transition/main.js */"./demo/transition/main.js");
 
 
 /***/ })

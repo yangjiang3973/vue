@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: './demo/modal/main.js',
+    entry: './demo/transition/main.js',
     output: {
         path: path.resolve(__dirname, '../dist'),
         filename: 'mini-vue.js',
@@ -50,7 +50,10 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(__dirname, '../demo/modal/style.css'),
+                    from: path.resolve(
+                        __dirname,
+                        '../demo/transition/style.css'
+                    ),
                     to: path.resolve(__dirname, '../dist/'),
                 },
             ],

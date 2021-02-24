@@ -55,6 +55,10 @@ export function createPatchFunction(backend) {
     const cbs = {};
 
     const { modules, nodeOps } = backend;
+    console.log(
+        '🚀 ~ file: patch.js ~ line 58 ~ createPatchFunction ~ modules',
+        modules
+    );
 
     for (i = 0; i < hooks.length; ++i) {
         cbs[hooks[i]] = [];
